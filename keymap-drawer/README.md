@@ -8,5 +8,5 @@
 pip install keymap-drawer
 export PYTHONUTF8=1   # Windows で必要
 keymap -c keymap-drawer/config.yaml parse -z config/cornix.keymap > keymap-drawer/cornix.yaml
-keymap -c keymap-drawer/config.yaml draw keymap-drawer/cornix.yaml --dts-layout boards/jzf/cornix/cornix-layouts.dtsi -s Base Numpad Symbol Mouse RPad Bluetooth Bluetooth > keymap-drawer/cornix.svg
+keymap -c keymap-drawer/config.yaml draw keymap-drawer/cornix.yaml --dts-layout boards/jzf/cornix/cornix-layouts.dtsi -s Base Numpad Symbol Mouse RPad Bluetooth > keymap-drawer/cornix.svg
 ```
