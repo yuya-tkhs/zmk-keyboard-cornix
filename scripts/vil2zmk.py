@@ -90,6 +90,11 @@ EXTRA_LAYERS_FOR = {"MOUSE": ["MSLOW"]}
 #   誤爆ガード：True なら「直前 COMBO_PRIOR_IDLE_MS 以内に打鍵があればコンボにしない」
 #     False にするのは、打った直後に間髪入れず押すもの・文字を打たない層のもの
 COMBO_PRIOR_IDLE_MS = 150
+
+# ---- 数・記号キー（タップダンス）の判定時間 T1：押してから次に押すまでの猶予。2回タップ（R pad）の受付時間
+# 延ばすと2回タップは楽になるが、1回タップの層が効くまでの待ちと「押してすぐ次を打つと Base のまま出る」時間も延びる
+# 150 → 200（2026-10-01：R pad の2回タップがシビアだったため）。長押し判定 T2（ht_sym / ht_rpad）は 150 のまま
+TD_TAPPING_TERM_MS = 200
 COMBO_TIMEOUT_MS = {2: 40, 3: 60, 4: 60}   # キー数ごとの同時押し判定時間。3〜4キーは少し長め
 SYM_ROW = ["BASE", "NUMPAD", "SYM"]       # 右手の記号・移動コンボは Num pad／数・記号層でも効かせる
 COMBOS = [
@@ -243,7 +248,7 @@ A("        };")
 A("        td_sym: td_sym {")
 A('            compatible = "zmk,behavior-tap-dance";')
 A("            #binding-cells = <0>;")
-A("            tapping-term-ms = <150>;")
+A(f"            tapping-term-ms = <{TD_TAPPING_TERM_MS}>;")
 A("            bindings = <&ht_sym SYM SYM>, <&ht_rpad RPAD RPAD>;")
 A("        };")
 A("    };")
