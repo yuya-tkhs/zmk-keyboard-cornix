@@ -40,8 +40,8 @@ layers:
   - ↑
   - {t: /, s: '?'}
   - Win
-  - {t: マウス, h: TG}
-  - Num pad
+  - ''
+  - ''
   - Alt
   - {t: 数記号, s: R pad}
   - Space
@@ -52,6 +52,7 @@ layers:
   - ↓
   - →
   Numpad:
+  - {t: ▽, type: trans}
   - /
   - '7'
   - '8'
@@ -62,7 +63,7 @@ layers:
   - ''
   - ''
   - ''
-  - ''
+  - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - '*'
   - '4'
@@ -74,14 +75,13 @@ layers:
   - ''
   - ''
   - ''
-  - ''
   - Num Enter
-  - '0'
+  - {t: ▽, type: trans}
+  - {t: ',', s: <}
   - '1'
   - '2'
   - '3'
   - .
-  - ''
   - Num Lock
   - {t: ▽, type: trans}
   - ''
@@ -90,11 +90,11 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
   - ''
   - ''
-  - {t: Num pad, type: held}
   - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
+  - '0'
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
@@ -141,7 +141,7 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - Menu
+  - {t: ▽, type: trans}
   - {t: '@', s: '`'}
   - {t: ¥, s: '|'}
   - {t: ▽, type: trans}
@@ -193,11 +193,11 @@ layers:
   - ''
   - ''
   - {t: ▽, type: trans}
-  - {t: マウス, h: TG}
+  - ''
+  - ''
   - {t: ▽, type: trans}
+  - Slow
   - {t: ▽, type: trans}
-  - 低速
-  - 高速
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
@@ -306,59 +306,20 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  MouseFast:
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {type: held}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
 combos:
-- p: [1, 2]
+- p: [2, 3]
+  k: F24
+  l: [Base]
+- p: [13, 14]
+  k: Esc
+  l: [Base]
+- p: [14, 15]
+  k: F23
+  l: [Base]
+- p: [15, 16]
+  k: 無変換
+  l: [Base]
+- p: [25, 26]
   k: Del
   l: [Base]
 - p: [26, 27]
@@ -367,96 +328,81 @@ combos:
 - p: [27, 28]
   k: Enter
   l: [Base]
-- p: [2, 3]
-  k: F24
-  l: [Mouse, MouseSlow, MouseFast]
-- p: [14, 15]
-  k: F23
-  l: [Mouse, MouseSlow, MouseFast]
-- p: [36, 48]
-  k: BS
-  l: [Base, Numpad, Symbol]
-- p: [26, 27]
-  k: BS
-  l: [Mouse, MouseSlow, MouseFast]
-- p: [36, 49]
-  k: Enter
-  l: [Base, Numpad, Symbol]
-- p: [27, 28]
-  k: Enter
-  l: [Mouse, MouseSlow, MouseFast]
-- p: [34, 35]
-  k: {t: '@', s: '`'}
-  l: [Base, Numpad, Symbol]
-- p: [26, 27]
-  k: {t: '@', s: '`'}
-  l: [RPad]
-- p: [0, 1]
-  k: Esc
-  l: [Mouse, MouseSlow, MouseFast]
-- p: [13, 14]
-  k: BS
-  l: [Numpad]
-- p: [14, 15]
-  k: Num Enter
-  l: [Numpad]
-- p: [27, 28]
-  k: {t: ',', s: <}
-  l: [Numpad]
+- p: [26, 27, 28]
+  k: Ctrl+Enter
+  l: [Base]
+- p: [14, 15, 16]
+  k: {t: TG, s: Num pad}
+  l: [Base, Numpad]
+- p: [13, 14, 15, 16]
+  k: {t: TG, s: マウス}
+  l: [Base, Mouse, MouseSlow]
 - p: [10, 11]
   k: Del
   l: [Base]
-- p: [2, 3]
-  k: F24
+- p: [8, 9]
+  k: {t: '[', s: '{'}
   l: [Base]
-- p: [14, 15]
-  k: F23
+- p: [19, 20]
+  k: 変換
   l: [Base]
-- p: [28, 29]
-  k: Ctrl+Enter
+- p: [20, 21]
+  k: {t: ']', s: '}'}
   l: [Base]
-- p: [0, 1]
-  k: Esc
-  l: [Base]
-- p: [0, 1]
-  k: Esc
-  l: [Symbol]
-- p: [48, 49]
-  k: End
-  l: [Base, Numpad, Symbol]
-- p: [26, 28]
-  k: End
-  l: [Mouse, MouseSlow, MouseFast]
-- p: [47, 48]
-  k: Home
-  l: [Base, Numpad, Symbol]
-- p: [25, 26]
-  k: Home
-  l: [Mouse, MouseSlow, MouseFast]
-- p: [36, 37]
-  k: PgDn
+- p: [34, 35]
+  k: {t: '@', s: '`'}
   l: [Base, Numpad, Symbol]
 - p: [35, 36]
   k: PgUp
   l: [Base, Numpad, Symbol]
-- p: [21, 22]
-  k: {t: ']', s: '}'}
-  l: [Base]
-- p: [13, 14]
-  k: {t: ']', s: '}'}
-  l: [RPad]
-- p: [9, 10]
-  k: {t: '[', s: '{'}
-  l: [Base]
+- p: [36, 37]
+  k: PgDn
+  l: [Base, Numpad, Symbol]
+- p: [47, 48]
+  k: Home
+  l: [Base, Numpad, Symbol]
+- p: [48, 49]
+  k: End
+  l: [Base, Numpad, Symbol]
+- p: [25, 26]
+  k: Del
+  l: [Numpad]
+- p: [26, 27]
+  k: BS
+  l: [Numpad]
+- p: [27, 28]
+  k: Num Enter
+  l: [Numpad]
+- p: [26, 27, 28]
+  k: Ctrl+Enter
+  l: [Numpad]
+- p: [2, 3]
+  k: F24
+  l: [Mouse, MouseSlow]
+- p: [14, 15]
+  k: F23
+  l: [Mouse, MouseSlow]
+- p: [25, 26]
+  k: Del
+  l: [Mouse, MouseSlow]
+- p: [26, 27]
+  k: BS
+  l: [Mouse, MouseSlow]
+- p: [27, 28]
+  k: Enter
+  l: [Mouse, MouseSlow]
+- p: [26, 27, 28]
+  k: Ctrl+Enter
+  l: [Mouse, MouseSlow]
 - p: [1, 2]
   k: {t: '[', s: '{'}
   l: [RPad]
-- p: [19, 20]
-  k: 変換
-  l: [Base]
+- p: [13, 14]
+  k: {t: ']', s: '}'}
+  l: [RPad]
 - p: [15, 16]
   k: 変換
   l: [RPad]
-- p: [15, 16]
-  k: 無変換
-  l: [Base]
+- p: [26, 27]
+  k: {t: '@', s: '`'}
+  l: [RPad]

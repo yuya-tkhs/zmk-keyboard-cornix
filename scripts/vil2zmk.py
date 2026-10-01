@@ -1,6 +1,5 @@
-"""Cornix の .vil（RMK/Vial）を ZMK の cornix.keymap に書き起こす。"""
+"""Cornix の .vil（RMK/Vial）のキー配置を元に ZMK の cornix.keymap を作る。コンボは COMBOS 表で明示する。"""
 import json, os, sys
-from collections import defaultdict
 
 VIL, OUT = sys.argv[1], sys.argv[2]
 d = json.load(open(VIL, encoding="utf-8"))
@@ -9,8 +8,8 @@ NLAYERS = 5  # 使っているのは 0〜4。5〜9 は空
 LAYER_NAMES = ["Base", "Numpad", "Symbol", "Mouse", "RPad"]
 LAYER_DEFS = ["BASE", "NUMPAD", "SYM", "MOUSE", "RPAD"]
 # .vil に無い、ZMK 側だけで足す層（中身は全部 &trans）。マウス層の上に重ねて速度だけ変える
-EXTRA_LAYER_NAMES = ["MouseSlow", "MouseFast"]
-EXTRA_LAYER_DEFS = ["MSLOW", "MFAST"]
+EXTRA_LAYER_NAMES = ["MouseSlow"]
+EXTRA_LAYER_DEFS = ["MSLOW"]
 ALL_LAYER_NAMES = LAYER_NAMES + EXTRA_LAYER_NAMES
 ALL_LAYER_DEFS = LAYER_DEFS + EXTRA_LAYER_DEFS
 
@@ -47,48 +46,89 @@ USER = {
 }
 UNMAPPED = []
 
-# ---- .vil から意図的に変えたもの（2026-10-01 確認済み）
-# マウス層のホイールコンボが Base と上下逆だった → Base に揃える（F24=W Up / F23=W Dn）
-COMBO_OUT_OVERRIDE = {4: "KC_F24", 5: "KC_F23"}
-# R pad 層の右上外側（元は User05〜07 = Next BT / Prev BT / Clear BT）
+# ---- .vil から意図的に変えたもの
+# キーの配置は .vil が元。変えた位置だけここに書く（2026-10-01：KeyLayout_1001.png の改訂を含む）
 POS_OVERRIDE = {
+    # Base：TG(マウス) と MO(Num pad) を外した → 層の切り替えはコンボで行う
+    ("Base", 39): "&none",
+    ("Base", 40): "&none",
+    # Num pad：テンキーを1列内側へ寄せ、0 を親指（数・記号キーの位置）へ。左端の列は下の層を透かす
+    ("Numpad", 0): "&trans", ("Numpad", 1): "&kp KP_DIVIDE", ("Numpad", 2): "&kp KP_N7",
+    ("Numpad", 3): "&kp KP_N8", ("Numpad", 4): "&kp KP_N9", ("Numpad", 5): "&kp KP_MINUS",
+    ("Numpad", 12): "&trans", ("Numpad", 13): "&kp KP_MULTIPLY", ("Numpad", 14): "&kp KP_N4",
+    ("Numpad", 15): "&kp KP_N5", ("Numpad", 16): "&kp KP_N6", ("Numpad", 17): "&kp KP_PLUS",
+    ("Numpad", 24): "&trans", ("Numpad", 25): "&kp COMMA", ("Numpad", 26): "&kp KP_N1",
+    ("Numpad", 27): "&kp KP_N2", ("Numpad", 28): "&kp KP_N3", ("Numpad", 29): "&kp KP_DOT",
+    ("Numpad", 38): "&trans", ("Numpad", 39): "&none", ("Numpad", 40): "&none",
+    ("Numpad", 41): "&trans", ("Numpad", 42): "&kp KP_N0", ("Numpad", 43): "&trans",
+    # 数・記号：左下の Menu を外す
+    ("Symbol", 38): "&trans",
+    # マウス：TG を外す（抜けるのはコンボ）
+    ("Mouse", 39): "&none",
+    ("Mouse", 40): "&none",
+    # R pad 層の右上外側（元は User05〜07 = Next BT / Prev BT / Clear BT）
     ("RPad", 9): "&out OUT_TOG",          # USB ⇔ Bluetooth
     ("RPad", 10): "&none",
     ("RPad", 11): "&bt_clr_hold BT_CLR_CMD 0",  # 3秒長押しで Clear BT
     # マウス層の左親指（元は KC_ACL0 / KC_ACL2。ZMK に加速キーが無いので層＋入力プロセッサで再現）
     ("Mouse", 42): "&mo MSLOW",           # 押している間だけ低速（精密）
-    ("Mouse", 43): "&mo MFAST",           # 押している間だけ高速
+    ("Mouse", 43): "&trans",              # 高速は使わない（2026-10-01）
 }
 
-# ---- マウスキー移動の速度倍率（掛ける数, 割る数）。&zip_xy_scaler に渡す。どちらも 16 以下で
+# ---- マウスキー移動の速度倍率（掛ける数, 割る数）。&zip_xy_scaler に渡す。16 以下で
 MOUSE_SLOW_SCALE = (1, 3)   # 1/3 倍
-MOUSE_FAST_SCALE = (2, 1)   # 2 倍
-# 速度層（MSLOW/MFAST）が一番上のときもマウス層のコンボが効くように、コンボの layers に足す
-EXTRA_LAYERS_FOR = {"MOUSE": ["MSLOW", "MFAST"]}
+# 速度層（MSLOW）が一番上のときもマウス層のコンボが効くように、コンボの layers に足す
+EXTRA_LAYERS_FOR = {"MOUSE": ["MSLOW"]}
 
-# ---- コンボの誤爆ガード：直前 N ms 以内に別のキーを打っていたらコンボにしない（速打ち中の誤爆防止）
-# ZMK の require-prior-idle-ms。数えるのは「コンボ以外・修飾キー以外」のキー入力だけ
-# （コンボ自身の出力は数えないので、同じコンボの連打は妨げない）
+# ---- コンボ（2026-10-01 KeyLayout_1001.png）。.vil のコンボは使わず、ここで層ごとに明示する
+# (キー位置, 出力, 効く層, 誤爆ガード, メモ)
+#   キー位置は config/includes/cornix54.h の番号。右手は内側から数える（6 = Y, 11 = BS）
+#   誤爆ガード：True なら「直前 COMBO_PRIOR_IDLE_MS 以内に打鍵があればコンボにしない」
+#     False にするのは、打った直後に間髪入れず押すもの・文字を打たない層のもの
 COMBO_PRIOR_IDLE_MS = 150
-# ガードを掛けないコンボ（Vial のコンボ番号）。
-# 「打ち終わった直後に間髪入れず押す」もので、しかも文章中に並びとして出てこない組み合わせ
-COMBO_IDLE_EXEMPT = {
-    1: "X+C → BS：打ち間違いの直後に押す",
-    2: "C+V → Enter：打ち終わった直後に確定",
-    6: "↑+↓ → BS：矢印キーは文章の打鍵に混ざらない",
-    7: "↑+→ → Enter：同上",
-    22: "Tab+Q → Esc：変換の取り消しで直後に押す",
-    23: "Tab+1 → Esc（数・記号層）：同上",
-    24: "↓+→ → End：矢印同士。連続して移動するときに止めない",
-    25: "←+↓ → Home：同上",
-    30: "J+K → 変換：ローマ字を打った直後に押す。jk はローマ字に出ない",
-    31: "D+F → 無変換：同上。df もローマ字に出ない",
-}
-# 効く層がすべてここに入っているコンボにはガードを掛けない
-#   MOUSE：マウス層では文字を打たない
-#   NUMPAD：KP4+KP5 → BS / KP5+KP6 → Num Enter / KP3+KP. → , は数字を打った直後に押すもの
-# （Base/Num pad/数・記号 にまたがる矢印コンボなどは、層ではなく上の COMBO_IDLE_EXEMPT で判断する）
-COMBO_IDLE_EXEMPT_LAYERS = {"MOUSE", "NUMPAD"}
+COMBO_TIMEOUT_MS = {2: 40, 3: 60, 4: 60}   # キー数ごとの同時押し判定時間。3〜4キーは少し長め
+SYM_ROW = ["BASE", "NUMPAD", "SYM"]       # 右手の記号・移動コンボは Num pad／数・記号層でも効かせる
+COMBOS = [
+    # --- Base 左
+    ((2, 3),           "&kp F24",          ["BASE"],           True,  "W+E → F24（W Up）"),
+    ((13, 14),         "&kp ESC",          ["BASE"],           True,  "A+S → Esc。as はローマ字に多い（masu 等）ので必ずガード"),
+    ((14, 15),         "&kp F23",          ["BASE"],           True,  "S+D → F23（W Dn）"),
+    ((15, 16),         "&kp INT_MUHENKAN", ["BASE"],           False, "D+F → 無変換。ローマ字の直後に押す。df はローマ字に出ない"),
+    ((25, 26),         "&kp DEL",          ["BASE"],           True,  "Z+X → Del"),
+    ((26, 27),         "&kp BSPC",         ["BASE"],           False, "X+C → BS。打ち間違いの直後に押す"),
+    ((27, 28),         "&kp RET",          ["BASE"],           False, "C+V → Enter。打ち終わった直後に確定"),
+    ((26, 27, 28),     "&kp LC(RET)",      ["BASE"],           True,  "X+C+V → Ctrl+Enter。誤爆すると送信してしまう"),
+    # --- 層の切り替え（同じ位置で入って、同じ位置で抜ける）
+    ((14, 15, 16),     "&tog NUMPAD",      ["BASE", "NUMPAD"], True,  "S+D+F ／ 4+5+6 → Num pad 層 ON/OFF"),
+    ((13, 14, 15, 16), "&tog MOUSE",       ["BASE", "MOUSE"],  True,  "A+S+D+F ／ Left+Down+Up+Right → マウス層 ON/OFF"),
+    # --- Base 右
+    ((10, 11),         "&kp DEL",          ["BASE"],           True,  "P+BS → Del"),
+    ((8, 9),           "&kp RBKT",         ["BASE"],           True,  "I+O → [（JIS）"),
+    ((19, 20),         "&kp INT_HENKAN",   ["BASE"],           False, "J+K → 変換。ローマ字の直後に押す。jk はローマ字に出ない"),
+    ((20, 21),         "&kp NON_US_HASH",  ["BASE"],           True,  "K+L → ]（JIS）"),
+    ((34, 35),         "&kp LBKT",         SYM_ROW,            True,  ",+. → @（JIS）"),
+    ((35, 36),         "&kp PG_UP",        SYM_ROW,            True,  ".+↑ → PgUp"),
+    ((36, 37),         "&kp PG_DN",        SYM_ROW,            True,  "↑+/ → PgDn"),
+    ((47, 48),         "&kp HOME",         SYM_ROW,            False, "←+↓ → Home。矢印同士"),
+    ((48, 49),         "&kp END",          SYM_ROW,            False, "↓+→ → End。矢印同士"),
+    # --- Num pad 層（数字を打った直後に押すのでガードなし）
+    ((25, 26),         "&kp DEL",          ["NUMPAD"],         False, ",+1 → Del"),
+    ((26, 27),         "&kp BSPC",         ["NUMPAD"],         False, "1+2 → BS"),
+    ((27, 28),         "&kp KP_ENTER",     ["NUMPAD"],         False, "2+3 → Num Enter"),
+    ((26, 27, 28),     "&kp LC(RET)",      ["NUMPAD"],         False, "1+2+3 → Ctrl+Enter"),
+    # --- マウス層（文字を打たないのでガードなし）
+    ((2, 3),           "&kp F24",          ["MOUSE"],          False, "Click2+Click3 → F24（W Up）"),
+    ((14, 15),         "&kp F23",          ["MOUSE"],          False, "Down+Up → F23（W Dn）"),
+    ((25, 26),         "&kp DEL",          ["MOUSE"],          False, "←+↓ → Del"),
+    ((26, 27),         "&kp BSPC",         ["MOUSE"],          False, "↓+↑ → BS"),
+    ((27, 28),         "&kp RET",          ["MOUSE"],          False, "↑+→ → Enter"),
+    ((26, 27, 28),     "&kp LC(RET)",      ["MOUSE"],          False, "↓+↑+→ → Ctrl+Enter"),
+    # --- R pad 層（右手の Base を左手に写した層。Base 右と同じ考え方）
+    ((1, 2),           "&kp RBKT",         ["RPAD"],           True,  "P+O → [（JIS）"),
+    ((13, 14),         "&kp NON_US_HASH",  ["RPAD"],           True,  "-+L → ]（JIS）"),
+    ((15, 16),         "&kp INT_HENKAN",   ["RPAD"],           False, "K+J → 変換"),
+    ((26, 27),         "&kp LBKT",         ["RPAD"],           True,  ".+, → @（JIS）"),
+]
 
 
 def conv(code, where=""):
@@ -142,34 +182,6 @@ for li in range(NLAYERS):
     layers.append(m)
 assert all(len(m) == 50 for m in layers), [len(m) for m in layers]
 
-def resolved(li, p):
-    """その層が一番上のとき、p で実際に出るキー（TRNS は Base へ落とす）"""
-    code = layers[li][p]
-    return layers[0][p] if code == "KC_TRNS" else code
-
-# ---- コンボ：Vial はキーコード基準 → ZMK は位置＋層で指定し直す
-combos = []
-for ci, cb in enumerate(d["combo"]):
-    keys = [k for k in cb[:4] if k != "KC_NO"]
-    out = COMBO_OUT_OVERRIDE.get(ci, cb[4])
-    if not keys:
-        continue
-    by_pos = defaultdict(list)
-    for li in range(NLAYERS):
-        ps = []
-        for k in keys:
-            hits = [p for p in range(50) if resolved(li, p) == k]
-            if len(hits) != 1:
-                ps = None
-                break
-            ps.append(hits[0])
-        if ps:
-            by_pos[tuple(sorted(ps))].append(li)
-    if not by_pos:
-        UNMAPPED.append((f"combo{ci}", "+".join(keys), "どの層でも成立しない → 省略"))
-    for ps, lis in by_pos.items():
-        combos.append((ci, keys, out, ps, lis))
-
 # ---- 出力
 def row_fmt(cells):
     w = max(len(x) for x in cells)
@@ -181,8 +193,8 @@ A("/*")
 A(" * Cornix — Vial 配列からの移植")
 A(f" * 元ファイル：vil/{os.path.basename(VIL)}")
 A(" * 生成：scripts/vil2zmk.py（キー番号の対応は config/includes/cornix54.h の図を参照）")
-A(" * .vil から意図的に変えた点は vil2zmk.py の COMBO_OUT_OVERRIDE / POS_OVERRIDE を参照")
-A(" * ZMK 側だけで足したもの：速度層 MSLOW/MFAST（EXTRA_LAYER_*）、コンボの誤爆ガード（COMBO_PRIOR_IDLE_MS）")
+A(" * キー配置は .vil が元。変えた位置は vil2zmk.py の POS_OVERRIDE、コンボは COMBOS 表（.vil のコンボは使わない）")
+A(" * ZMK 側だけで足したもの：速度層 MSLOW（EXTRA_LAYER_*）、コンボの誤爆ガード（COMBO_PRIOR_IDLE_MS）")
 A(" */")
 A("")
 A("#include <behaviors.dtsi>")
@@ -195,11 +207,10 @@ A("")
 for i, n in enumerate(ALL_LAYER_DEFS):
     A(f"#define {n} {i}")
 A("")
-A("// マウスキー移動の速度切り替え：MSLOW / MFAST 層が有効な間だけ移動量を拡大縮小する")
-A("// （マウス層の左親指 42 / 43 を押している間 = &mo MSLOW / &mo MFAST）")
+A("// マウスキー移動の速度切り替え：MSLOW 層が有効な間だけ移動量を縮める")
+A("// （マウス層の左親指 42 を押している間 = &mo MSLOW）")
 A("&mmv_input_listener {")
-for node, layer, (mul, div), note in (("slow", "MSLOW", MOUSE_SLOW_SCALE, "低速（精密）"),
-                                      ("fast", "MFAST", MOUSE_FAST_SCALE, "高速")):
+for node, layer, (mul, div), note in (("slow", "MSLOW", MOUSE_SLOW_SCALE, "低速（精密）"),):
     A(f"    {node} {{  // {note}：{mul}/{div} 倍")
     A(f"        layers = <{layer}>;")
     A(f"        input-processors = <&zip_xy_scaler {mul} {div}>;")
@@ -235,31 +246,21 @@ A("    };")
 A("")
 A("    combos {")
 A('        compatible = "zmk,combos";')
-def combo_idle_ms(ci, lis):
-    """そのコンボに付ける require-prior-idle-ms（0 = ガードなし）"""
-    if ci in COMBO_IDLE_EXEMPT:
-        return 0
-    if all(LAYER_DEFS[l] in COMBO_IDLE_EXEMPT_LAYERS for l in lis):
-        return 0
-    return COMBO_PRIOR_IDLE_MS
-
-def combo_layers(lis):
-    out = [LAYER_DEFS[l] for l in lis]
+def combo_layers(names):
+    out = list(names)
     for l in list(out):
         out += [x for x in EXTRA_LAYERS_FOR.get(l, []) if x not in out]
     return out
 
-for ci, keys, out, ps, lis in combos:
-    name = f"combo_{ci:02d}" + ("" if len([c for c in combos if c[0] == ci]) == 1 else "_" + "_".join(map(str, lis)))
-    idle = combo_idle_ms(ci, lis)
-    A(f"        // {' + '.join(keys)} → {out}" + ("" if idle else "（誤爆ガードなし）"))
-    A(f"        {name} {{")
-    A(f"            timeout-ms = <40>;")
-    if idle:
-        A(f"            require-prior-idle-ms = <{idle}>;")
+for i, (ps, binding, lnames, guard, note) in enumerate(COMBOS):
+    A(f"        // {note}" + ("" if guard else "（誤爆ガードなし）"))
+    A(f"        combo_{i:02d} {{")
+    A(f"            timeout-ms = <{COMBO_TIMEOUT_MS[len(ps)]}>;")
+    if guard:
+        A(f"            require-prior-idle-ms = <{COMBO_PRIOR_IDLE_MS}>;")
     A(f"            key-positions = <{' '.join(map(str, ps))}>;")
-    A(f"            bindings = <{conv(out, name)}>;")
-    A(f"            layers = <{' '.join(combo_layers(lis))}>;")
+    A(f"            bindings = <{binding}>;")
+    A(f"            layers = <{' '.join(combo_layers(lnames))}>;")
     A("        };")
 A("    };")
 A("")
@@ -310,8 +311,8 @@ A("};")
 open(OUT, "w", encoding="utf-8", newline="\n").write("\n".join(L) + "\n")
 
 print("combos:")
-for ci, keys, out, ps, lis in combos:
-    print(f"  {ci:2d} {'+'.join(keys):24s} -> {out:16s} pos={ps} layers={combo_layers(lis)} idle={combo_idle_ms(ci, lis)}")
+for ps, binding, lnames, guard, note in COMBOS:
+    print(f"  {str(ps):18s} {binding:20s} layers={combo_layers(lnames)} guard={guard}")
 print("unmapped:")
 for u in UNMAPPED:
     print("  ", u)

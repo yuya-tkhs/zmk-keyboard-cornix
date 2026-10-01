@@ -2,8 +2,8 @@
  * Cornix — Vial 配列からの移植
  * 元ファイル：vil/2026-09-09_cornix_vial.vil
  * 生成：scripts/vil2zmk.py（キー番号の対応は config/includes/cornix54.h の図を参照）
- * .vil から意図的に変えた点は vil2zmk.py の COMBO_OUT_OVERRIDE / POS_OVERRIDE を参照
- * ZMK 側だけで足したもの：速度層 MSLOW/MFAST（EXTRA_LAYER_*）、コンボの誤爆ガード（COMBO_PRIOR_IDLE_MS）
+ * キー配置は .vil が元。変えた位置は vil2zmk.py の POS_OVERRIDE、コンボは COMBOS 表（.vil のコンボは使わない）
+ * ZMK 側だけで足したもの：速度層 MSLOW（EXTRA_LAYER_*）、コンボの誤爆ガード（COMBO_PRIOR_IDLE_MS）
  */
 
 #include <behaviors.dtsi>
@@ -19,18 +19,13 @@
 #define MOUSE 3
 #define RPAD 4
 #define MSLOW 5
-#define MFAST 6
 
-// マウスキー移動の速度切り替え：MSLOW / MFAST 層が有効な間だけ移動量を拡大縮小する
-// （マウス層の左親指 42 / 43 を押している間 = &mo MSLOW / &mo MFAST）
+// マウスキー移動の速度切り替え：MSLOW 層が有効な間だけ移動量を縮める
+// （マウス層の左親指 42 を押している間 = &mo MSLOW）
 &mmv_input_listener {
     slow {  // 低速（精密）：1/3 倍
         layers = <MSLOW>;
         input-processors = <&zip_xy_scaler 1 3>;
-    };
-    fast {  // 高速：2/1 倍
-        layers = <MFAST>;
-        input-processors = <&zip_xy_scaler 2 1>;
     };
 };
 
@@ -69,256 +64,252 @@
 
     combos {
         compatible = "zmk,combos";
-        // KC_Q + KC_W → KC_DELETE
+        // W+E → F24（W Up）
         combo_00 {
             timeout-ms = <40>;
             require-prior-idle-ms = <150>;
-            key-positions = <1 2>;
+            key-positions = <2 3>;
+            bindings = <&kp F24>;
+            layers = <BASE>;
+        };
+        // A+S → Esc。as はローマ字に多い（masu 等）ので必ずガード
+        combo_01 {
+            timeout-ms = <40>;
+            require-prior-idle-ms = <150>;
+            key-positions = <13 14>;
+            bindings = <&kp ESC>;
+            layers = <BASE>;
+        };
+        // S+D → F23（W Dn）
+        combo_02 {
+            timeout-ms = <40>;
+            require-prior-idle-ms = <150>;
+            key-positions = <14 15>;
+            bindings = <&kp F23>;
+            layers = <BASE>;
+        };
+        // D+F → 無変換。ローマ字の直後に押す。df はローマ字に出ない（誤爆ガードなし）
+        combo_03 {
+            timeout-ms = <40>;
+            key-positions = <15 16>;
+            bindings = <&kp INT_MUHENKAN>;
+            layers = <BASE>;
+        };
+        // Z+X → Del
+        combo_04 {
+            timeout-ms = <40>;
+            require-prior-idle-ms = <150>;
+            key-positions = <25 26>;
             bindings = <&kp DEL>;
             layers = <BASE>;
         };
-        // KC_X + KC_C → KC_BSPACE（誤爆ガードなし）
-        combo_01 {
-            timeout-ms = <40>;
-            key-positions = <26 27>;
-            bindings = <&kp BSPC>;
-            layers = <BASE>;
-        };
-        // KC_C + KC_V → KC_ENTER（誤爆ガードなし）
-        combo_02 {
-            timeout-ms = <40>;
-            key-positions = <27 28>;
-            bindings = <&kp RET>;
-            layers = <BASE>;
-        };
-        // KC_BTN2 + KC_BTN3 → KC_F24（誤爆ガードなし）
-        combo_04 {
-            timeout-ms = <40>;
-            key-positions = <2 3>;
-            bindings = <&kp F24>;
-            layers = <MOUSE MSLOW MFAST>;
-        };
-        // KC_MS_U + KC_MS_D → KC_F23（誤爆ガードなし）
+        // X+C → BS。打ち間違いの直後に押す（誤爆ガードなし）
         combo_05 {
             timeout-ms = <40>;
-            key-positions = <14 15>;
-            bindings = <&kp F23>;
-            layers = <MOUSE MSLOW MFAST>;
-        };
-        // KC_UP + KC_DOWN → KC_BSPACE（誤爆ガードなし）
-        combo_06_0_1_2 {
-            timeout-ms = <40>;
-            key-positions = <36 48>;
-            bindings = <&kp BSPC>;
-            layers = <BASE NUMPAD SYM>;
-        };
-        // KC_UP + KC_DOWN → KC_BSPACE（誤爆ガードなし）
-        combo_06_3 {
-            timeout-ms = <40>;
             key-positions = <26 27>;
             bindings = <&kp BSPC>;
-            layers = <MOUSE MSLOW MFAST>;
+            layers = <BASE>;
         };
-        // KC_UP + KC_RIGHT → KC_ENTER（誤爆ガードなし）
-        combo_07_0_1_2 {
-            timeout-ms = <40>;
-            key-positions = <36 49>;
-            bindings = <&kp RET>;
-            layers = <BASE NUMPAD SYM>;
-        };
-        // KC_UP + KC_RIGHT → KC_ENTER（誤爆ガードなし）
-        combo_07_3 {
+        // C+V → Enter。打ち終わった直後に確定（誤爆ガードなし）
+        combo_06 {
             timeout-ms = <40>;
             key-positions = <27 28>;
             bindings = <&kp RET>;
-            layers = <MOUSE MSLOW MFAST>;
+            layers = <BASE>;
         };
-        // KC_COMMA + KC_DOT → KC_LBRACKET
-        combo_08_0_1_2 {
-            timeout-ms = <40>;
+        // X+C+V → Ctrl+Enter。誤爆すると送信してしまう
+        combo_07 {
+            timeout-ms = <60>;
             require-prior-idle-ms = <150>;
-            key-positions = <34 35>;
-            bindings = <&kp LBKT>;
-            layers = <BASE NUMPAD SYM>;
+            key-positions = <26 27 28>;
+            bindings = <&kp LC(RET)>;
+            layers = <BASE>;
         };
-        // KC_COMMA + KC_DOT → KC_LBRACKET
-        combo_08_4 {
-            timeout-ms = <40>;
+        // S+D+F ／ 4+5+6 → Num pad 層 ON/OFF
+        combo_08 {
+            timeout-ms = <60>;
             require-prior-idle-ms = <150>;
-            key-positions = <26 27>;
-            bindings = <&kp LBKT>;
-            layers = <RPAD>;
+            key-positions = <14 15 16>;
+            bindings = <&tog NUMPAD>;
+            layers = <BASE NUMPAD>;
         };
-        // KC_BTN4 + KC_TAB → KC_ESCAPE（誤爆ガードなし）
+        // A+S+D+F ／ Left+Down+Up+Right → マウス層 ON/OFF
         combo_09 {
-            timeout-ms = <40>;
-            key-positions = <0 1>;
-            bindings = <&kp ESC>;
-            layers = <MOUSE MSLOW MFAST>;
+            timeout-ms = <60>;
+            require-prior-idle-ms = <150>;
+            key-positions = <13 14 15 16>;
+            bindings = <&tog MOUSE>;
+            layers = <BASE MOUSE MSLOW>;
         };
-        // KC_KP_4 + KC_KP_5 → KC_BSPACE（誤爆ガードなし）
+        // P+BS → Del
         combo_10 {
-            timeout-ms = <40>;
-            key-positions = <13 14>;
-            bindings = <&kp BSPC>;
-            layers = <NUMPAD>;
-        };
-        // KC_KP_5 + KC_KP_6 → KC_KP_ENTER（誤爆ガードなし）
-        combo_11 {
-            timeout-ms = <40>;
-            key-positions = <14 15>;
-            bindings = <&kp KP_ENTER>;
-            layers = <NUMPAD>;
-        };
-        // KC_KP_3 + KC_KP_DOT → KC_COMMA（誤爆ガードなし）
-        combo_12 {
-            timeout-ms = <40>;
-            key-positions = <27 28>;
-            bindings = <&kp COMMA>;
-            layers = <NUMPAD>;
-        };
-        // KC_BSPACE + KC_P → KC_DELETE
-        combo_18 {
             timeout-ms = <40>;
             require-prior-idle-ms = <150>;
             key-positions = <10 11>;
             bindings = <&kp DEL>;
             layers = <BASE>;
         };
-        // KC_W + KC_E → KC_F24
-        combo_19 {
+        // I+O → [（JIS）
+        combo_11 {
             timeout-ms = <40>;
             require-prior-idle-ms = <150>;
-            key-positions = <2 3>;
-            bindings = <&kp F24>;
+            key-positions = <8 9>;
+            bindings = <&kp RBKT>;
             layers = <BASE>;
         };
-        // KC_S + KC_D → KC_F23
-        combo_20 {
+        // J+K → 変換。ローマ字の直後に押す。jk はローマ字に出ない（誤爆ガードなし）
+        combo_12 {
+            timeout-ms = <40>;
+            key-positions = <19 20>;
+            bindings = <&kp INT_HENKAN>;
+            layers = <BASE>;
+        };
+        // K+L → ]（JIS）
+        combo_13 {
             timeout-ms = <40>;
             require-prior-idle-ms = <150>;
-            key-positions = <14 15>;
-            bindings = <&kp F23>;
+            key-positions = <20 21>;
+            bindings = <&kp NON_US_HASH>;
             layers = <BASE>;
         };
-        // KC_V + KC_B → LCTL(KC_ENTER)
-        combo_21 {
+        // ,+. → @（JIS）
+        combo_14 {
             timeout-ms = <40>;
             require-prior-idle-ms = <150>;
-            key-positions = <28 29>;
-            bindings = <&kp LC(RET)>;
-            layers = <BASE>;
-        };
-        // KC_TAB + KC_Q → KC_ESCAPE（誤爆ガードなし）
-        combo_22 {
-            timeout-ms = <40>;
-            key-positions = <0 1>;
-            bindings = <&kp ESC>;
-            layers = <BASE>;
-        };
-        // KC_TAB + KC_1 → KC_ESCAPE（誤爆ガードなし）
-        combo_23 {
-            timeout-ms = <40>;
-            key-positions = <0 1>;
-            bindings = <&kp ESC>;
-            layers = <SYM>;
-        };
-        // KC_DOWN + KC_RIGHT → KC_END（誤爆ガードなし）
-        combo_24_0_1_2 {
-            timeout-ms = <40>;
-            key-positions = <48 49>;
-            bindings = <&kp END>;
+            key-positions = <34 35>;
+            bindings = <&kp LBKT>;
             layers = <BASE NUMPAD SYM>;
         };
-        // KC_DOWN + KC_RIGHT → KC_END（誤爆ガードなし）
-        combo_24_3 {
-            timeout-ms = <40>;
-            key-positions = <26 28>;
-            bindings = <&kp END>;
-            layers = <MOUSE MSLOW MFAST>;
-        };
-        // KC_LEFT + KC_DOWN → KC_HOME（誤爆ガードなし）
-        combo_25_0_1_2 {
-            timeout-ms = <40>;
-            key-positions = <47 48>;
-            bindings = <&kp HOME>;
-            layers = <BASE NUMPAD SYM>;
-        };
-        // KC_LEFT + KC_DOWN → KC_HOME（誤爆ガードなし）
-        combo_25_3 {
-            timeout-ms = <40>;
-            key-positions = <25 26>;
-            bindings = <&kp HOME>;
-            layers = <MOUSE MSLOW MFAST>;
-        };
-        // KC_UP + KC_SLASH → KC_PGDOWN
-        combo_26 {
-            timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
-            key-positions = <36 37>;
-            bindings = <&kp PG_DN>;
-            layers = <BASE NUMPAD SYM>;
-        };
-        // KC_DOT + KC_UP → KC_PGUP
-        combo_27 {
+        // .+↑ → PgUp
+        combo_15 {
             timeout-ms = <40>;
             require-prior-idle-ms = <150>;
             key-positions = <35 36>;
             bindings = <&kp PG_UP>;
             layers = <BASE NUMPAD SYM>;
         };
-        // KC_L + KC_MINUS → KC_NONUS_HASH
-        combo_28_0 {
+        // ↑+/ → PgDn
+        combo_16 {
             timeout-ms = <40>;
             require-prior-idle-ms = <150>;
-            key-positions = <21 22>;
-            bindings = <&kp NON_US_HASH>;
-            layers = <BASE>;
+            key-positions = <36 37>;
+            bindings = <&kp PG_DN>;
+            layers = <BASE NUMPAD SYM>;
         };
-        // KC_L + KC_MINUS → KC_NONUS_HASH
-        combo_28_4 {
+        // ←+↓ → Home。矢印同士（誤爆ガードなし）
+        combo_17 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
-            key-positions = <13 14>;
-            bindings = <&kp NON_US_HASH>;
-            layers = <RPAD>;
+            key-positions = <47 48>;
+            bindings = <&kp HOME>;
+            layers = <BASE NUMPAD SYM>;
         };
-        // KC_O + KC_P → KC_RBRACKET
-        combo_29_0 {
+        // ↓+→ → End。矢印同士（誤爆ガードなし）
+        combo_18 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
-            key-positions = <9 10>;
-            bindings = <&kp RBKT>;
-            layers = <BASE>;
+            key-positions = <48 49>;
+            bindings = <&kp END>;
+            layers = <BASE NUMPAD SYM>;
         };
-        // KC_O + KC_P → KC_RBRACKET
-        combo_29_4 {
+        // ,+1 → Del（誤爆ガードなし）
+        combo_19 {
+            timeout-ms = <40>;
+            key-positions = <25 26>;
+            bindings = <&kp DEL>;
+            layers = <NUMPAD>;
+        };
+        // 1+2 → BS（誤爆ガードなし）
+        combo_20 {
+            timeout-ms = <40>;
+            key-positions = <26 27>;
+            bindings = <&kp BSPC>;
+            layers = <NUMPAD>;
+        };
+        // 2+3 → Num Enter（誤爆ガードなし）
+        combo_21 {
+            timeout-ms = <40>;
+            key-positions = <27 28>;
+            bindings = <&kp KP_ENTER>;
+            layers = <NUMPAD>;
+        };
+        // 1+2+3 → Ctrl+Enter（誤爆ガードなし）
+        combo_22 {
+            timeout-ms = <60>;
+            key-positions = <26 27 28>;
+            bindings = <&kp LC(RET)>;
+            layers = <NUMPAD>;
+        };
+        // Click2+Click3 → F24（W Up）（誤爆ガードなし）
+        combo_23 {
+            timeout-ms = <40>;
+            key-positions = <2 3>;
+            bindings = <&kp F24>;
+            layers = <MOUSE MSLOW>;
+        };
+        // Down+Up → F23（W Dn）（誤爆ガードなし）
+        combo_24 {
+            timeout-ms = <40>;
+            key-positions = <14 15>;
+            bindings = <&kp F23>;
+            layers = <MOUSE MSLOW>;
+        };
+        // ←+↓ → Del（誤爆ガードなし）
+        combo_25 {
+            timeout-ms = <40>;
+            key-positions = <25 26>;
+            bindings = <&kp DEL>;
+            layers = <MOUSE MSLOW>;
+        };
+        // ↓+↑ → BS（誤爆ガードなし）
+        combo_26 {
+            timeout-ms = <40>;
+            key-positions = <26 27>;
+            bindings = <&kp BSPC>;
+            layers = <MOUSE MSLOW>;
+        };
+        // ↑+→ → Enter（誤爆ガードなし）
+        combo_27 {
+            timeout-ms = <40>;
+            key-positions = <27 28>;
+            bindings = <&kp RET>;
+            layers = <MOUSE MSLOW>;
+        };
+        // ↓+↑+→ → Ctrl+Enter（誤爆ガードなし）
+        combo_28 {
+            timeout-ms = <60>;
+            key-positions = <26 27 28>;
+            bindings = <&kp LC(RET)>;
+            layers = <MOUSE MSLOW>;
+        };
+        // P+O → [（JIS）
+        combo_29 {
             timeout-ms = <40>;
             require-prior-idle-ms = <150>;
             key-positions = <1 2>;
             bindings = <&kp RBKT>;
             layers = <RPAD>;
         };
-        // KC_J + KC_K → KC_HENK（誤爆ガードなし）
-        combo_30_0 {
+        // -+L → ]（JIS）
+        combo_30 {
             timeout-ms = <40>;
-            key-positions = <19 20>;
-            bindings = <&kp INT_HENKAN>;
-            layers = <BASE>;
+            require-prior-idle-ms = <150>;
+            key-positions = <13 14>;
+            bindings = <&kp NON_US_HASH>;
+            layers = <RPAD>;
         };
-        // KC_J + KC_K → KC_HENK（誤爆ガードなし）
-        combo_30_4 {
+        // K+J → 変換（誤爆ガードなし）
+        combo_31 {
             timeout-ms = <40>;
             key-positions = <15 16>;
             bindings = <&kp INT_HENKAN>;
             layers = <RPAD>;
         };
-        // KC_D + KC_F → KC_MHEN（誤爆ガードなし）
-        combo_31 {
+        // .+, → @（JIS）
+        combo_32 {
             timeout-ms = <40>;
-            key-positions = <15 16>;
-            bindings = <&kp INT_MUHENKAN>;
-            layers = <BASE>;
+            require-prior-idle-ms = <150>;
+            key-positions = <26 27>;
+            bindings = <&kp LBKT>;
+            layers = <RPAD>;
         };
     };
 
@@ -331,7 +322,7 @@
 &kp TAB    &kp Q      &kp W      &kp E      &kp R      &kp T                            &kp Y      &kp U      &kp I      &kp O      &kp P      &kp BSPC
 &kp LCTRL  &kp A      &kp S      &kp D      &kp F      &kp G                            &kp H      &kp J      &kp K      &kp L      &kp MINUS  &kp RET
 &kp LSHFT  &kp Z      &kp X      &kp C      &kp V      &kp B      &kp ESC    &kp RET    &kp N      &kp M      &kp COMMA  &kp DOT    &kp UP     &kp FSLH
-&kp LGUI   &tog 3     &mo 1      &kp LALT   &td_sym    &kp SPACE                        &kp RALT   &kp RCTRL  &kp RSHFT  &kp LEFT   &kp DOWN   &kp RIGHT
+&kp LGUI   &none      &none      &kp LALT   &td_sym    &kp SPACE                        &kp RALT   &kp RCTRL  &kp RSHFT  &kp LEFT   &kp DOWN   &kp RIGHT
             >;
             sensor-bindings = <&inc_dec_kp F22 F21 &inc_dec_kp F20 F19>;
         };
@@ -339,10 +330,10 @@
         numpad_layer {
             display-name = "Numpad";
             bindings = <
-&kp KP_DIVIDE    &kp KP_N7        &kp KP_N8        &kp KP_N9        &kp KP_MINUS     &none                                              &none            &none            &none            &none            &none            &trans
-&kp KP_MULTIPLY  &kp KP_N4        &kp KP_N5        &kp KP_N6        &kp KP_PLUS      &none                                              &none            &none            &none            &none            &none            &kp KP_ENTER
-&kp KP_N0        &kp KP_N1        &kp KP_N2        &kp KP_N3        &kp KP_DOT       &none            &kp KP_NUMLOCK   &trans           &none            &none            &trans           &trans           &trans           &trans
-&none            &none            &mo 1            &trans           &trans           &trans                                             &trans           &trans           &trans           &trans           &trans           &trans
+&trans           &kp KP_DIVIDE    &kp KP_N7        &kp KP_N8        &kp KP_N9        &kp KP_MINUS                                       &none            &none            &none            &none            &none            &trans
+&trans           &kp KP_MULTIPLY  &kp KP_N4        &kp KP_N5        &kp KP_N6        &kp KP_PLUS                                        &none            &none            &none            &none            &none            &kp KP_ENTER
+&trans           &kp COMMA        &kp KP_N1        &kp KP_N2        &kp KP_N3        &kp KP_DOT       &kp KP_NUMLOCK   &trans           &none            &none            &trans           &trans           &trans           &trans
+&trans           &none            &none            &trans           &kp KP_N0        &trans                                             &trans           &trans           &trans           &trans           &trans           &trans
             >;
         };
 
@@ -352,7 +343,7 @@
 &trans       &kp N1       &kp N2       &kp N3       &kp N4       &kp N5                                 &kp F1       &kp F2       &kp F3       &kp F4       &kp F5       &trans
 &trans       &kp N6       &kp N7       &kp N8       &kp N9       &kp N0                                 &kp F6       &kp F7       &kp F8       &kp F9       &kp F10      &trans
 &trans       &kp MINUS    &kp EQUAL    &kp SEMI     &kp SQT      &kp INT_RO   &trans       &trans       &kp F11      &kp F12      &trans       &trans       &trans       &trans
-&kp K_APP    &kp LBKT     &kp INT_YEN  &trans       &kp LCTRL    &kp LSHFT                              &trans       &trans       &trans       &trans       &trans       &trans
+&trans       &kp LBKT     &kp INT_YEN  &trans       &kp LCTRL    &kp LSHFT                              &trans       &trans       &trans       &trans       &trans       &trans
             >;
         };
 
@@ -362,7 +353,7 @@
 &trans           &mkp MB4         &mkp MB2         &mkp MB3         &mkp MB1         &none                                              &none            &none            &none            &none            &none            &none
 &trans           &mmv MOVE_LEFT   &mmv MOVE_DOWN   &mmv MOVE_UP     &mmv MOVE_RIGHT  &none                                              &none            &none            &none            &none            &none            &none
 &trans           &kp LEFT         &kp DOWN         &kp UP           &kp RIGHT        &none            &none            &none            &none            &none            &none            &none            &none            &none
-&trans           &tog 3           &trans           &trans           &mo MSLOW        &mo MFAST                                          &trans           &trans           &trans           &none            &none            &none
+&trans           &none            &none            &trans           &mo MSLOW        &trans                                             &trans           &trans           &trans           &none            &none            &none
             >;
         };
 
@@ -379,16 +370,6 @@
 
         mouseslow_layer {
             display-name = "MouseSlow";
-            bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-            >;
-        };
-
-        mousefast_layer {
-            display-name = "MouseFast";
             bindings = <
 &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
 &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
