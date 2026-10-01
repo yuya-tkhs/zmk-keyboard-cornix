@@ -1,0 +1,85 @@
+# keymap-drawer の設定。日本語配列（JIS）で使っているので、記号キーを JIS の刻印で表示する
+parse_config:
+  zmk_combos_layer_ids: true
+  zmk_keycode_map:
+    MINUS: {t: "-", s: "="}
+    EQUAL: {t: "^", s: "~"}
+    LBKT: {t: "@", s: "`"}
+    RBKT: {t: "[", s: "{"}
+    NON_US_HASH: {t: "]", s: "}"}
+    SEMI: {t: ";", s: "+"}
+    SQT: {t: ":", s: "*"}
+    INT_RO: {t: "\\", s: "_"}
+    INT_YEN: {t: "¥", s: "|"}
+    INT_HENKAN: 変換
+    INT_MUHENKAN: 無変換
+    FSLH: {t: "/", s: "?"}
+    COMMA: {t: ",", s: "<"}
+    DOT: {t: ".", s: ">"}
+    K_APP: Menu
+    RET: Enter
+    BSPC: BS
+    DEL: Del
+    ESC: Esc
+    TAB: Tab
+    SPACE: Space
+    LCTRL: Ctrl
+    RCTRL: Ctrl
+    LSHFT: Shift
+    RSHFT: Shift
+    LALT: Alt
+    RALT: Alt
+    LGUI: Win
+    UP: ↑
+    DOWN: ↓
+    LEFT: ←
+    RIGHT: →
+    PG_UP: PgUp
+    PG_DN: PgDn
+    HOME: Home
+    END: End
+    C_MUTE: Mute
+    KP_DIVIDE: /
+    KP_MULTIPLY: "*"
+    KP_MINUS: "-"
+    KP_PLUS: "+"
+    KP_DOT: .
+    KP_N0: "0"
+    KP_N1: "1"
+    KP_N2: "2"
+    KP_N3: "3"
+    KP_N4: "4"
+    KP_N5: "5"
+    KP_N6: "6"
+    KP_N7: "7"
+    KP_N8: "8"
+    KP_N9: "9"
+    KP_ENTER: Num Enter
+    KP_NUMLOCK: Num Lock
+    LC(RET): Ctrl+Enter
+  trans_legend: {t: "▽", type: trans}
+  sticky_label: "1回"
+  toggle_label: "TG"
+  layer_legend_map:
+    Base: Base
+    Numpad: Num pad
+    Symbol: 数・記号
+    Mouse: マウス
+    RPad: R pad
+  raw_binding_map:
+    "&td_sym": {t: "数記号", s: "R pad"}
+    "&bt_clr_hold BT_CLR_CMD 0": {t: "Clear BT", s: "3秒長押し"}
+    "&out OUT_TOG": "USB⇔BT"
+    "&mkp MB1": Click 1
+    "&mkp MB2": Click 2
+    "&mkp MB3": Click 3
+    "&mkp MB4": Click 4
+    "&mmv MOVE_LEFT": Left
+    "&mmv MOVE_RIGHT": Right
+    "&mmv MOVE_UP": Up
+    "&mmv MOVE_DOWN": Down
+draw_config:
+  combo_w: 24
+  combo_h: 20
+  small_pad: 1
+  dark_mode: auto
