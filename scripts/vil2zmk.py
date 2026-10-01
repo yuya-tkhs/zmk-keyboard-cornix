@@ -1,5 +1,5 @@
 """Cornix の .vil（RMK/Vial）を ZMK の cornix.keymap に書き起こす。"""
-import json, sys
+import json, os, sys
 from collections import defaultdict
 
 VIL, OUT = sys.argv[1], sys.argv[2]
@@ -140,8 +140,8 @@ def row_fmt(cells):
 L = []
 A = L.append
 A("/*")
-A(" * Cornix — Vial 配列（260909.vil）からの移植")
-A(" * 元ファイル：work-repo/個人機材関連/data/cornix/2026-09-09_cornix_vial.vil")
+A(" * Cornix — Vial 配列からの移植")
+A(f" * 元ファイル：vil/{os.path.basename(VIL)}")
 A(" * 生成：scripts/vil2zmk.py（キー番号の対応は config/includes/cornix54.h の図を参照）")
 A(" * .vil から意図的に変えた点は vil2zmk.py の COMBO_OUT_OVERRIDE / POS_OVERRIDE を参照")
 A(" */")
