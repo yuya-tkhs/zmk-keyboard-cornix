@@ -211,12 +211,12 @@ layers:
   - I
   - U
   - Y
-  - {t: BT, h: '0'}
-  - {t: BT, h: '1'}
-  - {t: BT, h: '2'}
-  - USB⇔BT
   - ''
-  - {t: Clear BT, s: 3秒長押し}
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
   - {t: ▽, type: trans}
   - {t: '-', s: '='}
   - L

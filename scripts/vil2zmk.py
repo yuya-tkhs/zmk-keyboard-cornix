@@ -66,10 +66,10 @@ POS_OVERRIDE = {
     # マウス：TG を外す（抜けるのはコンボ）
     ("Mouse", 39): "&none",
     ("Mouse", 40): "&none",
-    # R pad 層の右上外側（元は User05〜07 = Next BT / Prev BT / Clear BT）
-    ("RPad", 9): "&out OUT_TOG",          # USB ⇔ Bluetooth
-    ("RPad", 10): "&none",
-    ("RPad", 11): "&bt_clr_hold BT_CLR_CMD 0",  # 3秒長押しで Clear BT
+    # R pad 層の右上（元は User00〜02, 05〜07 = BT0〜2 / Next BT / Prev BT / Clear BT）
+    # → Bluetooth まわりは Bluetooth 層へ一本化したので空ける（2026-10-01）
+    ("RPad", 6): "&none", ("RPad", 7): "&none", ("RPad", 8): "&none",
+    ("RPad", 9): "&none", ("RPad", 10): "&none", ("RPad", 11): "&none",
     # Bluetooth 層：R pad 層と同じ位置に Bluetooth まわりのキーだけを置く（それ以外は下の層を透かす）
     ("Bluetooth", 6): "&bt BT_SEL 0", ("Bluetooth", 7): "&bt BT_SEL 1", ("Bluetooth", 8): "&bt BT_SEL 2",
     ("Bluetooth", 9): "&out OUT_TOG", ("Bluetooth", 10): "&none",

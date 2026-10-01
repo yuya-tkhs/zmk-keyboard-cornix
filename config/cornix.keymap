@@ -361,10 +361,10 @@
         rpad_layer {
             display-name = "RPad";
             bindings = <
-&trans                     &kp P                      &kp O                      &kp I                      &kp U                      &kp Y                                                                            &bt BT_SEL 0               &bt BT_SEL 1               &bt BT_SEL 2               &out OUT_TOG               &none                      &bt_clr_hold BT_CLR_CMD 0
-&trans                     &kp MINUS                  &kp L                      &kp K                      &kp J                      &kp H                                                                            &none                      &none                      &none                      &none                      &none                      &none
-&trans                     &kp FSLH                   &kp DOT                    &kp COMMA                  &kp M                      &kp N                      &trans                     &kp C_MUTE                 &none                      &none                      &none                      &none                      &none                      &none
-&trans                     &none                      &none                      &trans                     &kp LCTRL                  &kp LSHFT                                                                        &none                      &none                      &none                      &none                      &none                      &none
+&trans      &kp P       &kp O       &kp I       &kp U       &kp Y                               &none       &none       &none       &none       &none       &none
+&trans      &kp MINUS   &kp L       &kp K       &kp J       &kp H                               &none       &none       &none       &none       &none       &none
+&trans      &kp FSLH    &kp DOT     &kp COMMA   &kp M       &kp N       &trans      &kp C_MUTE  &none       &none       &none       &none       &none       &none
+&trans      &none       &none       &trans      &kp LCTRL   &kp LSHFT                           &none       &none       &none       &none       &none       &none
             >;
             sensor-bindings = <&inc_dec_kp F22 F21 &inc_dec_kp C_VOL_UP C_VOL_DN>;
         };
