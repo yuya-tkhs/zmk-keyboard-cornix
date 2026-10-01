@@ -19,6 +19,7 @@
 #define MOUSE 3
 #define RPAD 4
 #define MSLOW 5
+#define BTL 6
 
 // マウスキー移動の速度切り替え：MSLOW 層が有効な間だけ移動量を縮める
 // （マウス層の左親指 42 を押している間 = &mo MSLOW）
@@ -322,7 +323,7 @@
 &kp TAB    &kp Q      &kp W      &kp E      &kp R      &kp T                            &kp Y      &kp U      &kp I      &kp O      &kp P      &kp BSPC
 &kp LCTRL  &kp A      &kp S      &kp D      &kp F      &kp G                            &kp H      &kp J      &kp K      &kp L      &kp MINUS  &kp RET
 &kp LSHFT  &kp Z      &kp X      &kp C      &kp V      &kp B      &kp ESC    &kp RET    &kp N      &kp M      &kp COMMA  &kp DOT    &kp UP     &kp FSLH
-&kp LGUI   &none      &none      &kp LALT   &td_sym    &kp SPACE                        &kp RALT   &kp RCTRL  &kp RSHFT  &kp LEFT   &kp DOWN   &kp RIGHT
+&kp LGUI   &none      &mo BTL    &kp LALT   &td_sym    &kp SPACE                        &kp RALT   &kp RCTRL  &kp RSHFT  &kp LEFT   &kp DOWN   &kp RIGHT
             >;
             sensor-bindings = <&inc_dec_kp F22 F21 &inc_dec_kp F20 F19>;
         };
@@ -372,6 +373,16 @@
             display-name = "MouseSlow";
             bindings = <
 &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+            >;
+        };
+
+        bluetooth_layer {
+            display-name = "Bluetooth";
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &out OUT_TOG  &none  &bt_clr_hold BT_CLR_CMD 0
 &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
 &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
 &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans

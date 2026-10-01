@@ -67,6 +67,7 @@ parse_config:
     Mouse: マウス
     RPad: R pad
     MouseSlow: Slow
+    Bluetooth: BT
   raw_binding_map:
     "&tog NUMPAD": {t: "TG", s: "Num pad"}
     "&tog MOUSE": {t: "TG", s: "マウス"}
