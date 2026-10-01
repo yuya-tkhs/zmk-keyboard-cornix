@@ -49,7 +49,7 @@ COMBO_OUT_OVERRIDE = {4: "KC_F24", 5: "KC_F23"}
 POS_OVERRIDE = {
     ("RPad", 9): "&out OUT_TOG",          # USB ⇔ Bluetooth
     ("RPad", 10): "&none",
-    ("RPad", 11): "&bt_clr_hold BT_CLR 0",  # 3秒長押しで Clear BT
+    ("RPad", 11): "&bt_clr_hold BT_CLR_CMD 0",  # 3秒長押しで Clear BT
 }
 
 
