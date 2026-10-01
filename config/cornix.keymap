@@ -344,7 +344,7 @@
 &trans                 &kp FSLH               &kp DOT                &kp COMMA              &kp M                  &kp N                  &trans                 &kp C_MUTE             &none                  &none                  &none                  &none                  &none                  &none
 &trans                 &none                  &none                  &trans                 &kp LCTRL              &kp LSHFT                                                            &none                  &none                  &none                  &none                  &none                  &none
             >;
-            sensor-bindings = <&trans &inc_dec_kp C_VOL_UP C_VOL_DN>;
+            sensor-bindings = <&inc_dec_kp F22 F21 &inc_dec_kp C_VOL_UP C_VOL_DN>;
         };
     };
 };

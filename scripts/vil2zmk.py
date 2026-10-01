@@ -222,7 +222,9 @@ for li in range(NLAYERS):
     A("            >;")
     eb = [enc_binding(enc[li][s], s) for s in (0, 1)]
     if any(eb):
-        eb = [x or "&trans" for x in eb]
+        # ノブには &trans が使えない（ビルドエラー）→ 空いている側は Base の割り当てを明示する
+        base_eb = [enc_binding(enc[0][s], s) for s in (0, 1)]
+        eb = [x or b or "&none" for x, b in zip(eb, base_eb)]
         A(f"            sensor-bindings = <{' '.join(eb)}>;")
     A("        };")
 A("    };")
