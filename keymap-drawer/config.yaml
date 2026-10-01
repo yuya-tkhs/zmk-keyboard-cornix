@@ -66,6 +66,8 @@ parse_config:
     Symbol: 数・記号
     Mouse: マウス
     RPad: R pad
+    MouseSlow: 低速
+    MouseFast: 高速
   raw_binding_map:
     "&td_sym": {t: "数記号", s: "R pad"}
     "&bt_clr_hold BT_CLR_CMD 0": {t: "Clear BT", s: "3秒長押し"}

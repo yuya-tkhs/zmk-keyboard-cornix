@@ -196,8 +196,8 @@ layers:
   - {t: マウス, h: TG}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - ''
-  - ''
+  - 低速
+  - 高速
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
@@ -255,6 +255,108 @@ layers:
   - ''
   - ''
   - ''
+  MouseSlow:
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {type: held}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  MouseFast:
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {type: held}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
 combos:
 - p: [1, 2]
   k: Del
@@ -267,22 +369,22 @@ combos:
   l: [Base]
 - p: [2, 3]
   k: F24
-  l: [Mouse]
+  l: [Mouse, MouseSlow, MouseFast]
 - p: [14, 15]
   k: F23
-  l: [Mouse]
+  l: [Mouse, MouseSlow, MouseFast]
 - p: [36, 48]
   k: BS
   l: [Base, Numpad, Symbol]
 - p: [26, 27]
   k: BS
-  l: [Mouse]
+  l: [Mouse, MouseSlow, MouseFast]
 - p: [36, 49]
   k: Enter
   l: [Base, Numpad, Symbol]
 - p: [27, 28]
   k: Enter
-  l: [Mouse]
+  l: [Mouse, MouseSlow, MouseFast]
 - p: [34, 35]
   k: {t: '@', s: '`'}
   l: [Base, Numpad, Symbol]
@@ -291,7 +393,7 @@ combos:
   l: [RPad]
 - p: [0, 1]
   k: Esc
-  l: [Mouse]
+  l: [Mouse, MouseSlow, MouseFast]
 - p: [13, 14]
   k: BS
   l: [Numpad]
@@ -324,13 +426,13 @@ combos:
   l: [Base, Numpad, Symbol]
 - p: [26, 28]
   k: End
-  l: [Mouse]
+  l: [Mouse, MouseSlow, MouseFast]
 - p: [47, 48]
   k: Home
   l: [Base, Numpad, Symbol]
 - p: [25, 26]
   k: Home
-  l: [Mouse]
+  l: [Mouse, MouseSlow, MouseFast]
 - p: [36, 37]
   k: PgDn
   l: [Base, Numpad, Symbol]

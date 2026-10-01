@@ -8,6 +8,11 @@ NLAYERS = 5  # 使っているのは 0〜4。5〜9 は空
 
 LAYER_NAMES = ["Base", "Numpad", "Symbol", "Mouse", "RPad"]
 LAYER_DEFS = ["BASE", "NUMPAD", "SYM", "MOUSE", "RPAD"]
+# .vil に無い、ZMK 側だけで足す層（中身は全部 &trans）。マウス層の上に重ねて速度だけ変える
+EXTRA_LAYER_NAMES = ["MouseSlow", "MouseFast"]
+EXTRA_LAYER_DEFS = ["MSLOW", "MFAST"]
+ALL_LAYER_NAMES = LAYER_NAMES + EXTRA_LAYER_NAMES
+ALL_LAYER_DEFS = LAYER_DEFS + EXTRA_LAYER_DEFS
 
 KC = {
     "TAB": "TAB", "LCTRL": "LCTRL", "LSHIFT": "LSHFT", "ESCAPE": "ESC", "LGUI": "LGUI",
@@ -50,7 +55,40 @@ POS_OVERRIDE = {
     ("RPad", 9): "&out OUT_TOG",          # USB ⇔ Bluetooth
     ("RPad", 10): "&none",
     ("RPad", 11): "&bt_clr_hold BT_CLR_CMD 0",  # 3秒長押しで Clear BT
+    # マウス層の左親指（元は KC_ACL0 / KC_ACL2。ZMK に加速キーが無いので層＋入力プロセッサで再現）
+    ("Mouse", 42): "&mo MSLOW",           # 押している間だけ低速（精密）
+    ("Mouse", 43): "&mo MFAST",           # 押している間だけ高速
 }
+
+# ---- マウスキー移動の速度倍率（掛ける数, 割る数）。&zip_xy_scaler に渡す。どちらも 16 以下で
+MOUSE_SLOW_SCALE = (1, 3)   # 1/3 倍
+MOUSE_FAST_SCALE = (2, 1)   # 2 倍
+# 速度層（MSLOW/MFAST）が一番上のときもマウス層のコンボが効くように、コンボの layers に足す
+EXTRA_LAYERS_FOR = {"MOUSE": ["MSLOW", "MFAST"]}
+
+# ---- コンボの誤爆ガード：直前 N ms 以内に別のキーを打っていたらコンボにしない（速打ち中の誤爆防止）
+# ZMK の require-prior-idle-ms。数えるのは「コンボ以外・修飾キー以外」のキー入力だけ
+# （コンボ自身の出力は数えないので、同じコンボの連打は妨げない）
+COMBO_PRIOR_IDLE_MS = 150
+# ガードを掛けないコンボ（Vial のコンボ番号）。
+# 「打ち終わった直後に間髪入れず押す」もので、しかも文章中に並びとして出てこない組み合わせ
+COMBO_IDLE_EXEMPT = {
+    1: "X+C → BS：打ち間違いの直後に押す",
+    2: "C+V → Enter：打ち終わった直後に確定",
+    6: "↑+↓ → BS：矢印キーは文章の打鍵に混ざらない",
+    7: "↑+→ → Enter：同上",
+    22: "Tab+Q → Esc：変換の取り消しで直後に押す",
+    23: "Tab+1 → Esc（数・記号層）：同上",
+    24: "↓+→ → End：矢印同士。連続して移動するときに止めない",
+    25: "←+↓ → Home：同上",
+    30: "J+K → 変換：ローマ字を打った直後に押す。jk はローマ字に出ない",
+    31: "D+F → 無変換：同上。df もローマ字に出ない",
+}
+# 効く層がすべてここに入っているコンボにはガードを掛けない
+#   MOUSE：マウス層では文字を打たない
+#   NUMPAD：KP4+KP5 → BS / KP5+KP6 → Num Enter / KP3+KP. → , は数字を打った直後に押すもの
+# （Base/Num pad/数・記号 にまたがる矢印コンボなどは、層ではなく上の COMBO_IDLE_EXEMPT で判断する）
+COMBO_IDLE_EXEMPT_LAYERS = {"MOUSE", "NUMPAD"}
 
 
 def conv(code, where=""):
@@ -144,6 +182,7 @@ A(" * Cornix — Vial 配列からの移植")
 A(f" * 元ファイル：vil/{os.path.basename(VIL)}")
 A(" * 生成：scripts/vil2zmk.py（キー番号の対応は config/includes/cornix54.h の図を参照）")
 A(" * .vil から意図的に変えた点は vil2zmk.py の COMBO_OUT_OVERRIDE / POS_OVERRIDE を参照")
+A(" * ZMK 側だけで足したもの：速度層 MSLOW/MFAST（EXTRA_LAYER_*）、コンボの誤爆ガード（COMBO_PRIOR_IDLE_MS）")
 A(" */")
 A("")
 A("#include <behaviors.dtsi>")
@@ -151,9 +190,21 @@ A("#include <dt-bindings/zmk/bt.h>")
 A("#include <dt-bindings/zmk/keys.h>")
 A("#include <dt-bindings/zmk/outputs.h>")
 A("#include <dt-bindings/zmk/pointing.h>")
+A("#include <input/processors.dtsi>")
 A("")
-for i, n in enumerate(LAYER_DEFS):
+for i, n in enumerate(ALL_LAYER_DEFS):
     A(f"#define {n} {i}")
+A("")
+A("// マウスキー移動の速度切り替え：MSLOW / MFAST 層が有効な間だけ移動量を拡大縮小する")
+A("// （マウス層の左親指 42 / 43 を押している間 = &mo MSLOW / &mo MFAST）")
+A("&mmv_input_listener {")
+for node, layer, (mul, div), note in (("slow", "MSLOW", MOUSE_SLOW_SCALE, "低速（精密）"),
+                                      ("fast", "MFAST", MOUSE_FAST_SCALE, "高速")):
+    A(f"    {node} {{  // {note}：{mul}/{div} 倍")
+    A(f"        layers = <{layer}>;")
+    A(f"        input-processors = <&zip_xy_scaler {mul} {div}>;")
+    A("    };")
+A("};")
 A("")
 A("/ {")
 A("    behaviors {")
@@ -184,14 +235,31 @@ A("    };")
 A("")
 A("    combos {")
 A('        compatible = "zmk,combos";')
+def combo_idle_ms(ci, lis):
+    """そのコンボに付ける require-prior-idle-ms（0 = ガードなし）"""
+    if ci in COMBO_IDLE_EXEMPT:
+        return 0
+    if all(LAYER_DEFS[l] in COMBO_IDLE_EXEMPT_LAYERS for l in lis):
+        return 0
+    return COMBO_PRIOR_IDLE_MS
+
+def combo_layers(lis):
+    out = [LAYER_DEFS[l] for l in lis]
+    for l in list(out):
+        out += [x for x in EXTRA_LAYERS_FOR.get(l, []) if x not in out]
+    return out
+
 for ci, keys, out, ps, lis in combos:
     name = f"combo_{ci:02d}" + ("" if len([c for c in combos if c[0] == ci]) == 1 else "_" + "_".join(map(str, lis)))
-    A(f"        // {' + '.join(keys)} → {out}")
+    idle = combo_idle_ms(ci, lis)
+    A(f"        // {' + '.join(keys)} → {out}" + ("" if idle else "（誤爆ガードなし）"))
     A(f"        {name} {{")
     A(f"            timeout-ms = <40>;")
+    if idle:
+        A(f"            require-prior-idle-ms = <{idle}>;")
     A(f"            key-positions = <{' '.join(map(str, ps))}>;")
     A(f"            bindings = <{conv(out, name)}>;")
-    A(f"            layers = <{' '.join(LAYER_DEFS[l] for l in lis)}>;")
+    A(f"            layers = <{' '.join(combo_layers(lis))}>;")
     A("        };")
 A("    };")
 A("")
@@ -227,13 +295,23 @@ for li in range(NLAYERS):
         eb = [x or b or "&none" for x, b in zip(eb, base_eb)]
         A(f"            sensor-bindings = <{' '.join(eb)}>;")
     A("        };")
+# .vil に無い速度層：全部 &trans（マウス層をそのまま透かし、入力プロセッサの切り替えにだけ使う）
+for n in EXTRA_LAYER_NAMES:
+    A("")
+    A(f"        {n.lower()}_layer {{")
+    A(f'            display-name = "{n}";')
+    A("            bindings = <")
+    for r in range(4):
+        A("  ".join(["&trans"] * (14 if r == 2 else 12)))
+    A("            >;")
+    A("        };")
 A("    };")
 A("};")
 open(OUT, "w", encoding="utf-8", newline="\n").write("\n".join(L) + "\n")
 
 print("combos:")
 for ci, keys, out, ps, lis in combos:
-    print(f"  {ci:2d} {'+'.join(keys):24s} -> {out:16s} pos={ps} layers={[LAYER_NAMES[l] for l in lis]}")
+    print(f"  {ci:2d} {'+'.join(keys):24s} -> {out:16s} pos={ps} layers={combo_layers(lis)} idle={combo_idle_ms(ci, lis)}")
 print("unmapped:")
 for u in UNMAPPED:
     print("  ", u)
