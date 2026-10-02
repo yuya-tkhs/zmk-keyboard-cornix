@@ -8,8 +8,8 @@ NLAYERS = 5  # 使っているのは 0〜4。5〜9 は空
 LAYER_NAMES = ["Base", "Numpad", "Symbol", "Mouse", "RPad"]
 LAYER_DEFS = ["BASE", "NUMPAD", "SYM", "MOUSE", "RPAD"]
 # .vil に無い、ZMK 側だけで足す層（中身は全部 &trans）。マウス層の上に重ねて速度だけ変える
-EXTRA_LAYER_NAMES = ["MouseSlow", "Bluetooth"]
-EXTRA_LAYER_DEFS = ["MSLOW", "BTL"]
+EXTRA_LAYER_NAMES = ["MouseSlow"]
+EXTRA_LAYER_DEFS = ["MSLOW"]
 ALL_LAYER_NAMES = LAYER_NAMES + EXTRA_LAYER_NAMES
 ALL_LAYER_DEFS = LAYER_DEFS + EXTRA_LAYER_DEFS
 
@@ -51,7 +51,7 @@ UNMAPPED = []
 POS_OVERRIDE = {
     # Base：TG(マウス) と MO(Num pad) を外した → 層の切り替えはコンボで行う
     ("Base", 39): "&none",
-    ("Base", 40): "&mo BTL",              # 押している間だけ Bluetooth 層（2026-10-01。元は MO(Num pad) の位置）
+    ("Base", 40): "&mo RPAD",             # 押している間だけ R pad 層（左手＝R pad、右手＝Bluetooth）。2026-10-02、元は Bluetooth 層キー
     # Num pad：テンキーを1列内側へ寄せ、0 を親指（数・記号キーの位置）へ。左端の列は下の層を透かす
     ("Numpad", 0): "&trans", ("Numpad", 1): "&kp KP_DIVIDE", ("Numpad", 2): "&kp KP_N7",
     ("Numpad", 3): "&kp KP_N8", ("Numpad", 4): "&kp KP_N9", ("Numpad", 5): "&kp KP_MINUS",
@@ -66,14 +66,11 @@ POS_OVERRIDE = {
     # マウス：TG を外す（抜けるのはコンボ）
     ("Mouse", 39): "&none",
     ("Mouse", 40): "&none",
-    # R pad 層の右上（元は User00〜02, 05〜07 = BT0〜2 / Next BT / Prev BT / Clear BT）
-    # → Bluetooth まわりは Bluetooth 層へ一本化したので空ける（2026-10-01）
-    ("RPad", 6): "&none", ("RPad", 7): "&none", ("RPad", 8): "&none",
-    ("RPad", 9): "&none", ("RPad", 10): "&none", ("RPad", 11): "&none",
-    # Bluetooth 層：R pad 層と同じ位置に Bluetooth まわりのキーだけを置く（それ以外は下の層を透かす）
-    ("Bluetooth", 6): "&bt BT_SEL 0", ("Bluetooth", 7): "&bt BT_SEL 1", ("Bluetooth", 8): "&bt BT_SEL 2",
-    ("Bluetooth", 9): "&out OUT_TOG", ("Bluetooth", 10): "&none",
-    ("Bluetooth", 11): "&bt_clr_hold BT_CLR_CMD 0",
+    # R pad 層の右上：Bluetooth まわり（元は User00〜02, 05〜07 = BT0〜2 / Next BT / Prev BT / Clear BT）
+    # 2026-10-01 に Bluetooth 層へ移したが、2026-10-02 に R pad 層へ戻して Bluetooth 層は廃止（左手＝R pad、右手＝Bluetooth）
+    ("RPad", 6): "&bt BT_SEL 0", ("RPad", 7): "&bt BT_SEL 1", ("RPad", 8): "&bt BT_SEL 2",
+    ("RPad", 9): "&out OUT_TOG", ("RPad", 10): "&none",
+    ("RPad", 11): "&bt_clr_hold BT_CLR_CMD 0",
     # マウス層の左親指（元は KC_ACL0 / KC_ACL2。ZMK に加速キーが無いので層＋入力プロセッサで再現）
     ("Mouse", 42): "&mo MSLOW",           # 押している間だけ低速（精密）
     ("Mouse", 43): "&trans",              # 高速は使わない（2026-10-01）
@@ -313,7 +310,6 @@ for li in range(NLAYERS):
     A("        };")
 # .vil に無い層：POS_OVERRIDE で指定した位置以外は &trans
 #   MouseSlow：全部 &trans（マウス層をそのまま透かし、入力プロセッサの切り替えにだけ使う）
-#   Bluetooth：右上に Bluetooth まわりのキー
 for n in EXTRA_LAYER_NAMES:
     A("")
     A(f"        {n.lower()}_layer {{")
