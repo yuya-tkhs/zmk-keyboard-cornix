@@ -42,11 +42,20 @@
         // 数・記号キー：外側が長押し判定、内側がタップダンス（2026-10-02 組み替え）
         //   長押し＝押している間 数・記号（別のキーを押した瞬間に確定）
         //   タップ＝次の1キーだけ 数・記号／2回タップ＝次の1キーだけ R pad
+        // 次の1キーだけ有効な層。標準の &sl と違い、修飾キーを押しても切れない
+        sl_m: sl_m {
+            compatible = "zmk,behavior-sticky-key";
+            #binding-cells = <1>;
+            release-after-ms = <3000>;
+            bindings = <&mo>;
+            quick-release;
+            ignore-modifiers;
+        };
         sym_td: sym_td {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
             tapping-term-ms = <300>;
-            bindings = <&sl SYM>, <&sl RPAD>;
+            bindings = <&sl_m SYM>, <&sl_m RPAD>;
         };
         sym_ht: sym_ht {
             compatible = "zmk,behavior-hold-tap";

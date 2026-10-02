@@ -93,6 +93,9 @@ COMBO_PRIOR_IDLE_MS = 150
 # 内側＝タップダンス（sym_td）：タップしたときだけ働く。1回＝数・記号を次の1キーだけ／2回＝R pad を次の1キーだけ
 # 引き換えに「タップ→長押し＝押している間 R pad」は無くなった（補わない。本人判断）
 SYM_HOLD_TERM_MS = 150       # T2：何も押さずにこれだけ押し続けたら数・記号層（長押し）
+# タップ／2回タップで入る「次の1キーだけ有効な層」（sl_m）。ZMK 標準の &sl は修飾キーも「次の1キー」に数えてしまい、
+# 修飾キー＋その層のキー が打てなかった → 修飾キーは数えない（ignore-modifiers）版を自作（2026-10-02）
+STICKY_LAYER_RELEASE_MS = 3000   # 何も押さなければこの時間で自動で切れる（標準 1000 → 3000、本人指定）
 TD_TAPPING_TERM_MS = 300     # T1：タップの回数を数える時間
 # 外側の長押し判定は、タップと決めた時点で「最初に押した時刻」をタップダンスに渡す。
 # なので T1 は「1回目を押してから2回目を離すまで」に間に合う長さが要る。150 では2回タップがほぼ通らなかった
@@ -241,11 +244,20 @@ A("        };")
 A("        // 数・記号キー：外側が長押し判定、内側がタップダンス（2026-10-02 組み替え）")
 A("        //   長押し＝押している間 数・記号（別のキーを押した瞬間に確定）")
 A("        //   タップ＝次の1キーだけ 数・記号／2回タップ＝次の1キーだけ R pad")
+A("        // 次の1キーだけ有効な層。標準の &sl と違い、修飾キーを押しても切れない")
+A("        sl_m: sl_m {")
+A('            compatible = "zmk,behavior-sticky-key";')
+A("            #binding-cells = <1>;")
+A(f"            release-after-ms = <{STICKY_LAYER_RELEASE_MS}>;")
+A("            bindings = <&mo>;")
+A("            quick-release;")
+A("            ignore-modifiers;")
+A("        };")
 A("        sym_td: sym_td {")
 A('            compatible = "zmk,behavior-tap-dance";')
 A("            #binding-cells = <0>;")
 A(f"            tapping-term-ms = <{TD_TAPPING_TERM_MS}>;")
-A("            bindings = <&sl SYM>, <&sl RPAD>;")
+A("            bindings = <&sl_m SYM>, <&sl_m RPAD>;")
 A("        };")
 A("        sym_ht: sym_ht {")
 A('            compatible = "zmk,behavior-hold-tap";')
