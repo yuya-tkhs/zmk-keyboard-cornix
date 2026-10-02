@@ -32,21 +32,6 @@
 
 / {
     behaviors {
-        // Vial TD(2) の再現：タップ=OSL(2) / ホールド=MO(2) / 2回タップ=OSL(4) / タップ→ホールド=MO(4)
-        ht_sym: ht_sym {
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            bindings = <&mo>, <&sl>;
-            flavor = "hold-preferred";
-            tapping-term-ms = <150>;
-        };
-        ht_rpad: ht_rpad {
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            bindings = <&mo>, <&sl>;
-            flavor = "hold-preferred";
-            tapping-term-ms = <150>;
-        };
         // 誤操作でPCとのペアリングを消さないよう、3秒長押しでだけ Clear BT
         bt_clr_hold: bt_clr_hold {
             compatible = "zmk,behavior-hold-tap";
@@ -55,11 +40,21 @@
             flavor = "tap-preferred";
             tapping-term-ms = <3000>;
         };
-        td_sym: td_sym {
+        // 数・記号キー：外側が長押し判定、内側がタップダンス（2026-10-02 組み替え）
+        //   長押し＝押している間 数・記号（別のキーを押した瞬間に確定）
+        //   タップ＝次の1キーだけ 数・記号／2回タップ＝次の1キーだけ R pad
+        sym_td: sym_td {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
-            tapping-term-ms = <200>;
-            bindings = <&ht_sym SYM SYM>, <&ht_rpad RPAD RPAD>;
+            tapping-term-ms = <150>;
+            bindings = <&sl SYM>, <&sl RPAD>;
+        };
+        sym_ht: sym_ht {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            bindings = <&mo>, <&sym_td>;
+            flavor = "hold-preferred";
+            tapping-term-ms = <150>;
         };
     };
 
@@ -320,10 +315,10 @@
         base_layer {
             display-name = "Base";
             bindings = <
-&kp TAB    &kp Q      &kp W      &kp E      &kp R      &kp T                            &kp Y      &kp U      &kp I      &kp O      &kp P      &kp BSPC
-&kp LCTRL  &kp A      &kp S      &kp D      &kp F      &kp G                            &kp H      &kp J      &kp K      &kp L      &kp MINUS  &kp RET
-&kp LSHFT  &kp Z      &kp X      &kp C      &kp V      &kp B      &kp ESC    &kp RET    &kp N      &kp M      &kp COMMA  &kp DOT    &kp UP     &kp FSLH
-&kp LGUI   &none      &mo BTL    &kp LALT   &td_sym    &kp SPACE                        &kp RALT   &kp RCTRL  &kp RSHFT  &kp LEFT   &kp DOWN   &kp RIGHT
+&kp TAB        &kp Q          &kp W          &kp E          &kp R          &kp T                                        &kp Y          &kp U          &kp I          &kp O          &kp P          &kp BSPC
+&kp LCTRL      &kp A          &kp S          &kp D          &kp F          &kp G                                        &kp H          &kp J          &kp K          &kp L          &kp MINUS      &kp RET
+&kp LSHFT      &kp Z          &kp X          &kp C          &kp V          &kp B          &kp ESC        &kp RET        &kp N          &kp M          &kp COMMA      &kp DOT        &kp UP         &kp FSLH
+&kp LGUI       &none          &mo BTL        &kp LALT       &sym_ht SYM 0  &kp SPACE                                    &kp RALT       &kp RCTRL      &kp RSHFT      &kp LEFT       &kp DOWN       &kp RIGHT
             >;
             sensor-bindings = <&inc_dec_kp F22 F21 &inc_dec_kp F20 F19>;
         };

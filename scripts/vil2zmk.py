@@ -91,10 +91,12 @@ EXTRA_LAYERS_FOR = {"MOUSE": ["MSLOW"]}
 #     False にするのは、打った直後に間髪入れず押すもの・文字を打たない層のもの
 COMBO_PRIOR_IDLE_MS = 150
 
-# ---- 数・記号キー（タップダンス）の判定時間 T1：押してから次に押すまでの猶予。2回タップ（R pad）の受付時間
-# 延ばすと2回タップは楽になるが、1回タップの層が効くまでの待ちと「押してすぐ次を打つと Base のまま出る」時間も延びる
-# 150 → 200（2026-10-01：R pad の2回タップがシビアだったため）。長押し判定 T2（ht_sym / ht_rpad）は 150 のまま
-TD_TAPPING_TERM_MS = 200
+# ---- 数・記号キー（2026-10-02 組み替え）
+# 外側＝長押し判定（sym_ht）：押している間に別のキーを押したら、その瞬間に数・記号層（待ちなし・取りこぼしなし）
+# 内側＝タップダンス（sym_td）：タップしたときだけ働く。1回＝数・記号を次の1キーだけ／2回＝R pad を次の1キーだけ
+# 引き換えに「タップ→長押し＝押している間 R pad」は無くなった（補わない。本人判断）
+SYM_HOLD_TERM_MS = 150       # T2：何も押さずにこれだけ押し続けたら数・記号層（長押し）
+TD_TAPPING_TERM_MS = 150     # T1：タップの回数を数える時間（200 → 150 に戻した。2026-10-02）
 COMBO_TIMEOUT_MS = {2: 40, 3: 60, 4: 60}   # キー数ごとの同時押し判定時間。3〜4キーは少し長め
 SYM_ROW = ["BASE", "NUMPAD", "SYM"]       # 右手の記号・移動コンボは Num pad／数・記号層でも効かせる
 COMBOS = [
@@ -161,7 +163,7 @@ def conv(code, where=""):
     if code.startswith("MO("):
         return f"&mo {code[3:-1]}"
     if code == "TD(2)":
-        return "&td_sym"
+        return "&sym_ht SYM 0"
     if code == "LCTL(KC_ENTER)":
         return "&kp LC(RET)"
     UNMAPPED.append((where, code, "未対応 → &none"))
@@ -228,15 +230,6 @@ A("};")
 A("")
 A("/ {")
 A("    behaviors {")
-A("        // Vial TD(2) の再現：タップ=OSL(2) / ホールド=MO(2) / 2回タップ=OSL(4) / タップ→ホールド=MO(4)")
-for n, layer in (("sym", "SYM"), ("rpad", "RPAD")):
-    A(f"        ht_{n}: ht_{n} {{")
-    A('            compatible = "zmk,behavior-hold-tap";')
-    A("            #binding-cells = <2>;")
-    A("            bindings = <&mo>, <&sl>;")
-    A('            flavor = "hold-preferred";')
-    A("            tapping-term-ms = <150>;")
-    A("        };")
 A("        // 誤操作でPCとのペアリングを消さないよう、3秒長押しでだけ Clear BT")
 A("        bt_clr_hold: bt_clr_hold {")
 A('            compatible = "zmk,behavior-hold-tap";')
@@ -245,11 +238,21 @@ A("            bindings = <&bt>, <&none>;")
 A('            flavor = "tap-preferred";')
 A("            tapping-term-ms = <3000>;")
 A("        };")
-A("        td_sym: td_sym {")
+A("        // 数・記号キー：外側が長押し判定、内側がタップダンス（2026-10-02 組み替え）")
+A("        //   長押し＝押している間 数・記号（別のキーを押した瞬間に確定）")
+A("        //   タップ＝次の1キーだけ 数・記号／2回タップ＝次の1キーだけ R pad")
+A("        sym_td: sym_td {")
 A('            compatible = "zmk,behavior-tap-dance";')
 A("            #binding-cells = <0>;")
 A(f"            tapping-term-ms = <{TD_TAPPING_TERM_MS}>;")
-A("            bindings = <&ht_sym SYM SYM>, <&ht_rpad RPAD RPAD>;")
+A("            bindings = <&sl SYM>, <&sl RPAD>;")
+A("        };")
+A("        sym_ht: sym_ht {")
+A('            compatible = "zmk,behavior-hold-tap";')
+A("            #binding-cells = <2>;")
+A("            bindings = <&mo>, <&sym_td>;")
+A('            flavor = "hold-preferred";')
+A(f"            tapping-term-ms = <{SYM_HOLD_TERM_MS}>;")
 A("        };")
 A("    };")
 A("")

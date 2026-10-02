@@ -71,7 +71,7 @@ parse_config:
   raw_binding_map:
     "&tog NUMPAD": {t: "TG", s: "Num pad"}
     "&tog MOUSE": {t: "TG", s: "マウス"}
-    "&td_sym": {t: "数記号", s: "R pad"}
+    "&sym_ht SYM 0": {t: "数記号", s: "R pad"}
     "&bt_clr_hold BT_CLR_CMD 0": {t: "Clear BT", s: "3秒長押し"}
     "&out OUT_TOG": "USB⇔BT"
     "&mkp MB1": Click 1
