@@ -46,7 +46,7 @@
         sym_td: sym_td {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
-            tapping-term-ms = <150>;
+            tapping-term-ms = <300>;
             bindings = <&sl SYM>, <&sl RPAD>;
         };
         sym_ht: sym_ht {
