@@ -69,7 +69,8 @@ POS_OVERRIDE = {
     # R pad 層の右上：Bluetooth まわり（元は User00〜02, 05〜07 = BT0〜2 / Next BT / Prev BT / Clear BT）
     # 2026-10-01 に Bluetooth 層へ移したが、2026-10-02 に R pad 層へ戻して Bluetooth 層は廃止（左手＝R pad、右手＝Bluetooth）
     ("RPad", 6): "&bt BT_SEL 0", ("RPad", 7): "&bt BT_SEL 1", ("RPad", 8): "&bt BT_SEL 2",
-    ("RPad", 9): "&out OUT_TOG", ("RPad", 10): "&none",
+    ("RPad", 9): "&out OUT_TOG",
+    ("RPad", 10): "&ind_bat",              # 左右の LED に電池残量（緑 80%以上／黄／赤 20%未満）。2026-10-05
     ("RPad", 11): "&bt_clr_hold BT_CLR_CMD 0",
     # マウス層の左親指（元は KC_ACL0 / KC_ACL2。ZMK に加速キーが無いので層＋入力プロセッサで再現）
     ("Mouse", 42): "&mo MSLOW",           # 押している間だけ低速（精密）
@@ -217,6 +218,7 @@ A("#include <dt-bindings/zmk/keys.h>")
 A("#include <dt-bindings/zmk/outputs.h>")
 A("#include <dt-bindings/zmk/pointing.h>")
 A("#include <input/processors.dtsi>")
+A("#include <behaviors/rgbled_widget.dtsi>")  # 電池残量の LED 表示（cornix_indicator shield）
 A("")
 for i, n in enumerate(ALL_LAYER_DEFS):
     A(f"#define {n} {i}")

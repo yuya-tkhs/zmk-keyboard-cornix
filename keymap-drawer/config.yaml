@@ -69,6 +69,7 @@ parse_config:
     MouseSlow: Slow
     Bluetooth: BT
   raw_binding_map:
+    "&ind_bat": {t: "電池", s: "LED"}
     "&tog NUMPAD": {t: "TG", s: "Num pad"}
     "&tog MOUSE": {t: "TG", s: "マウス"}
     "&sym_ht SYM 0": {t: "数記号", s: "R pad"}
