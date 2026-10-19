@@ -87,7 +87,7 @@ EXTRA_LAYERS_FOR = {"MOUSE": ["MSLOW"]}
 #   キー位置は config/includes/cornix54.h の番号。右手は内側から数える（6 = Y, 11 = BS）
 #   誤爆ガード：True なら「直前 COMBO_PRIOR_IDLE_MS 以内に打鍵があればコンボにしない」
 #     False にするのは、打った直後に間髪入れず押すもの・文字を打たない層のもの
-COMBO_PRIOR_IDLE_MS = 150
+COMBO_PRIOR_IDLE_MS = 250
 
 # ---- 数・記号キー（2026-10-02 組み替え）
 # 外側＝長押し判定（sym_ht）：押している間に別のキーを押したら、その瞬間に数・記号層（待ちなし・取りこぼしなし）

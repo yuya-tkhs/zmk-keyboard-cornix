@@ -72,7 +72,7 @@
         // W+E → F24（W Up）
         combo_00 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <2 3>;
             bindings = <&kp F24>;
             layers = <BASE>;
@@ -80,7 +80,7 @@
         // A+S → Esc。as はローマ字に多い（masu 等）ので必ずガード
         combo_01 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <13 14>;
             bindings = <&kp ESC>;
             layers = <BASE>;
@@ -88,7 +88,7 @@
         // S+D → F23（W Dn）
         combo_02 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <14 15>;
             bindings = <&kp F23>;
             layers = <BASE>;
@@ -103,7 +103,7 @@
         // Z+X → Del
         combo_04 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <25 26>;
             bindings = <&kp DEL>;
             layers = <BASE>;
@@ -125,7 +125,7 @@
         // X+C+V → Ctrl+Enter。誤爆すると送信してしまう
         combo_07 {
             timeout-ms = <60>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <26 27 28>;
             bindings = <&kp LC(RET)>;
             layers = <BASE>;
@@ -133,7 +133,7 @@
         // S+D+F ／ 4+5+6 → Num pad 層 ON/OFF
         combo_08 {
             timeout-ms = <60>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <14 15 16>;
             bindings = <&tog NUMPAD>;
             layers = <BASE NUMPAD>;
@@ -141,7 +141,7 @@
         // A+S+D+F ／ Left+Down+Up+Right → マウス層 ON/OFF
         combo_09 {
             timeout-ms = <60>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <13 14 15 16>;
             bindings = <&tog MOUSE>;
             layers = <BASE MOUSE MSLOW>;
@@ -149,7 +149,7 @@
         // P+BS → Del
         combo_10 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <10 11>;
             bindings = <&kp DEL>;
             layers = <BASE>;
@@ -157,7 +157,7 @@
         // I+O → [（JIS）
         combo_11 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <8 9>;
             bindings = <&kp RBKT>;
             layers = <BASE>;
@@ -172,7 +172,7 @@
         // K+L → ]（JIS）
         combo_13 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <20 21>;
             bindings = <&kp NON_US_HASH>;
             layers = <BASE>;
@@ -180,7 +180,7 @@
         // ,+. → @（JIS）
         combo_14 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <34 35>;
             bindings = <&kp LBKT>;
             layers = <BASE NUMPAD SYM>;
@@ -188,7 +188,7 @@
         // .+↑ → PgUp
         combo_15 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <35 36>;
             bindings = <&kp PG_UP>;
             layers = <BASE NUMPAD SYM>;
@@ -196,7 +196,7 @@
         // ↑+/ → PgDn
         combo_16 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <36 37>;
             bindings = <&kp PG_DN>;
             layers = <BASE NUMPAD SYM>;
@@ -288,7 +288,7 @@
         // P+O → [（JIS）
         combo_29 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <1 2>;
             bindings = <&kp RBKT>;
             layers = <RPAD>;
@@ -296,7 +296,7 @@
         // -+L → ]（JIS）
         combo_30 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <13 14>;
             bindings = <&kp NON_US_HASH>;
             layers = <RPAD>;
@@ -311,7 +311,7 @@
         // .+, → @（JIS）
         combo_32 {
             timeout-ms = <40>;
-            require-prior-idle-ms = <150>;
+            require-prior-idle-ms = <250>;
             key-positions = <26 27>;
             bindings = <&kp LBKT>;
             layers = <RPAD>;
