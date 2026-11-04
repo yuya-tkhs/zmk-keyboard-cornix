@@ -346,7 +346,10 @@ path.combo { stroke: #7f7f7f; }
 </g>
 <g class="combo combopos-0">
 <rect rx="6" ry="6" x="156" y="25" width="24" height="20" class="combo"/>
-<text x="168" y="35" class="combo tap">F24</text>
+<text x="168" y="35" class="combo tap">
+<tspan x="168" dy="-0.6em">W</tspan><tspan x="168" dy="1.2em">Up</tspan>
+</text>
+<text x="168" y="26" class="combo shifted">加速</text>
 </g>
 <g class="combo combopos-1">
 <rect rx="6" ry="6" x="100" y="95" width="24" height="20" class="combo"/>
@@ -354,7 +357,10 @@ path.combo { stroke: #7f7f7f; }
 </g>
 <g class="combo combopos-2">
 <rect rx="6" ry="6" x="156" y="81" width="24" height="20" class="combo"/>
-<text x="168" y="91" class="combo tap">F23</text>
+<text x="168" y="91" class="combo tap">
+<tspan x="168" dy="-0.6em">W</tspan><tspan x="168" dy="1.2em">Dn</tspan>
+</text>
+<text x="168" y="82" class="combo shifted">加速</text>
 </g>
 <g class="combo combopos-3">
 <rect rx="6" ry="6" x="212" y="81" width="24" height="20" class="combo"/>
@@ -1106,11 +1112,17 @@ path.combo { stroke: #7f7f7f; }
 </g>
 <g class="combo combopos-1">
 <rect rx="6" ry="6" x="156" y="25" width="24" height="20" class="combo"/>
-<text x="168" y="35" class="combo tap">F24</text>
+<text x="168" y="35" class="combo tap">
+<tspan x="168" dy="-0.6em">W</tspan><tspan x="168" dy="1.2em">Up</tspan>
+</text>
+<text x="168" y="26" class="combo shifted">加速</text>
 </g>
 <g class="combo combopos-2">
 <rect rx="6" ry="6" x="156" y="81" width="24" height="20" class="combo"/>
-<text x="168" y="91" class="combo tap">F23</text>
+<text x="168" y="91" class="combo tap">
+<tspan x="168" dy="-0.6em">W</tspan><tspan x="168" dy="1.2em">Dn</tspan>
+</text>
+<text x="168" y="82" class="combo shifted">加速</text>
 </g>
 <g class="combo combopos-3">
 <rect rx="6" ry="6" x="100" y="152" width="24" height="20" class="combo"/>

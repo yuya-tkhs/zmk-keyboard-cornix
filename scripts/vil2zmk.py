@@ -82,6 +82,18 @@ MOUSE_SLOW_SCALE = (1, 3)   # 1/3 倍
 # 速度層（MSLOW）が一番上のときもマウス層のコンボが効くように、コンボの layers に足す
 EXTRA_LAYERS_FOR = {"MOUSE": ["MSLOW"]}
 
+# ---- キーで加速スクロール（2026-11-05。AHK の lib/ScrollKeys.ahk を F23／F24 を使わずキーボード側へ移した）
+# 単押し＝SCROLL_TAP_NOTCH ノッチを1回だけ。長押し＝SCROLL_HOLD_DELAY_MS 後から流れ始め、
+# SCROLL_RAMP_MS かけて「40msあたり SCROLL_HOLD_START → SCROLL_HOLD_MAX ノッチ」まで直線的に速くなる
+# （AHK は 120ms ごとの段階だった。始まりと上限に届く時刻は同じ）
+# 1ノッチ＝Windows の「1回に何行スクロールするか」の設定どおり。スムーズスクロールは使わない（整数ノッチで送る）
+SCROLL_TAP_NOTCH = 3         # 単押しの量（AHK は 2.6）
+SCROLL_HOLD_DELAY_MS = 220   # 長押しとみなして流し始めるまで（AHK の REPEAT_DELAY）
+SCROLL_RAMP_MS = 360         # 流し始めから上限に届くまで（AHK は 120ms×3段）
+SCROLL_HOLD_START = 3        # 流し始めの速さ（40msあたりのノッチ数。AHK は 2.6）
+SCROLL_HOLD_MAX = 6          # 上限（40msあたりのノッチ数。AHK は 5）
+SCROLL_TAP_PERIOD_MS = 20    # 単押し用の部品が1回目を送るまでの時間。ここで1回だけ送って止める
+
 # ---- コンボ（2026-10-01 KeyLayout_1001.png）。.vil のコンボは使わず、ここで層ごとに明示する
 # (キー位置, 出力, 効く層, 誤爆ガード, メモ)
 #   キー位置は config/includes/cornix54.h の番号。右手は内側から数える（6 = Y, 11 = BS）
@@ -105,9 +117,9 @@ COMBO_TIMEOUT_MS = {2: 40, 3: 60, 4: 60}   # キー数ごとの同時押し判�
 SYM_ROW = ["BASE", "NUMPAD", "SYM"]       # 右手の記号・移動コンボは Num pad／数・記号層でも効かせる
 COMBOS = [
     # --- Base 左
-    ((2, 3),           "&kp F24",          ["BASE"],           True,  "W+E → F24（W Up）"),
+    ((2, 3),           "&scrl_up",          ["BASE"],           True,  "W+E → 上スクロール（加速つき）"),
     ((13, 14),         "&kp ESC",          ["BASE"],           True,  "A+S → Esc。as はローマ字に多い（masu 等）ので必ずガード"),
-    ((14, 15),         "&kp F23",          ["BASE"],           True,  "S+D → F23（W Dn）"),
+    ((14, 15),         "&scrl_dn",          ["BASE"],           True,  "S+D → 下スクロール（加速つき）"),
     ((15, 16),         "&kp INT_MUHENKAN", ["BASE"],           False, "D+F → 無変換。ローマ字の直後に押す。df はローマ字に出ない"),
     ((25, 26),         "&kp DEL",          ["BASE"],           True,  "Z+X → Del"),
     ((26, 27),         "&kp BSPC",         ["BASE"],           False, "X+C → BS。打ち間違いの直後に押す"),
@@ -132,8 +144,8 @@ COMBOS = [
     ((27, 28),         "&kp KP_ENTER",     ["NUMPAD"],         False, "2+3 → Num Enter"),
     ((26, 27, 28),     "&kp LC(RET)",      ["NUMPAD"],         False, "1+2+3 → Ctrl+Enter"),
     # --- マウス層（文字を打たないのでガードなし）
-    ((2, 3),           "&kp F24",          ["MOUSE"],          False, "Click2+Click3 → F24（W Up）"),
-    ((14, 15),         "&kp F23",          ["MOUSE"],          False, "Down+Up → F23（W Dn）"),
+    ((2, 3),           "&scrl_up",          ["MOUSE"],          False, "Click2+Click3 → 上スクロール（加速つき）"),
+    ((14, 15),         "&scrl_dn",          ["MOUSE"],          False, "Down+Up → 下スクロール（加速つき）"),
     ((25, 26),         "&kp DEL",          ["MOUSE"],          False, "←+↓ → Del"),
     ((26, 27),         "&kp BSPC",         ["MOUSE"],          False, "↓+↑ → BS"),
     ((27, 28),         "&kp RET",          ["MOUSE"],          False, "↑+→ → Enter"),
@@ -209,7 +221,7 @@ A(" * Cornix — Vial 配列からの移植")
 A(f" * 元ファイル：vil/{os.path.basename(VIL)}")
 A(" * 生成：scripts/vil2zmk.py（キー番号の対応は config/includes/cornix54.h の図を参照）")
 A(" * キー配置は .vil が元。変えた位置は vil2zmk.py の POS_OVERRIDE、コンボは COMBOS 表（.vil のコンボは使わない）")
-A(" * ZMK 側だけで足したもの：速度層 MSLOW（EXTRA_LAYER_*）、コンボの誤爆ガード（COMBO_PRIOR_IDLE_MS）")
+A(" * ZMK 側だけで足したもの：速度層 MSLOW（EXTRA_LAYER_*）、コンボの誤爆ガード（COMBO_PRIOR_IDLE_MS）、加速スクロール（SCROLL_*）")
 A(" */")
 A("")
 A("#include <behaviors.dtsi>")
@@ -218,6 +230,7 @@ A("#include <dt-bindings/zmk/keys.h>")
 A("#include <dt-bindings/zmk/outputs.h>")
 A("#include <dt-bindings/zmk/pointing.h>")
 A("#include <input/processors.dtsi>")
+A("#include <zephyr/dt-bindings/input/input-event-codes.h>")  # INPUT_REL_WHEEL（加速スクロール）
 A("#include <behaviors/rgbled_widget.dtsi>")  # 電池残量の LED 表示（cornix_indicator shield）
 A("")
 for i, n in enumerate(ALL_LAYER_DEFS):
@@ -268,7 +281,65 @@ A("            bindings = <&mo>, <&sym_td>;")
 A('            flavor = "hold-preferred";')
 A(f"            tapping-term-ms = <{SYM_HOLD_TERM_MS}>;")
 A("        };")
+# ---- 加速スクロール
+# 部品は3つ（どれも ZMK 標準のスクロールと同じ仕組み。押している間の速さを足し合わせて流れる）
+#   scrl_tap ：押して SCROLL_TAP_PERIOD_MS 後に1回だけ送り、その前に離す（＝単押しの量）
+#   scrl_hold：一定の速さ（流し始めの速さ）
+#   scrl_ramp：0 から直線的に速くなる。scrl_hold と足して「流し始め → 上限」
+# 速さの単位はノッチ／秒。40msあたり n ノッチ ＝ 毎秒 n×25 ノッチ
+tap_wait = SCROLL_TAP_PERIOD_MS + SCROLL_TAP_PERIOD_MS // 2   # 1回目は送り、2回目の前に離す
+tap_speed = SCROLL_TAP_NOTCH * 1000 // SCROLL_TAP_PERIOD_MS
+hold_speed = SCROLL_HOLD_START * 25
+ramp_speed = (SCROLL_HOLD_MAX - SCROLL_HOLD_START) * 25
+hold_delay = SCROLL_HOLD_DELAY_MS - tap_wait   # scrl_hold／ramp は単押し分を送ったあとに押すので、その分を引く
+assert SCROLL_TAP_NOTCH * 1000 % SCROLL_TAP_PERIOD_MS == 0, "単押しの量が整数ノッチにならない"
+assert hold_delay >= 0
+for name, note, period, delay, ttm, exp in (
+    ("scrl_tap", f"単押しの {SCROLL_TAP_NOTCH} ノッチ", SCROLL_TAP_PERIOD_MS, 0, 0, 0),
+    ("scrl_hold", f"長押し：一定の速さ（40msあたり {SCROLL_HOLD_START} ノッチ）", None, hold_delay, 0, 0),
+    ("scrl_ramp", f"長押し：{SCROLL_RAMP_MS}ms かけて 0 → 40msあたり {SCROLL_HOLD_MAX - SCROLL_HOLD_START} ノッチ", None, hold_delay, SCROLL_RAMP_MS, 1),
+):
+    A(f"        // 加速スクロールの部品：{note}")
+    A(f"        {name}: {name} {{")
+    A('            compatible = "zmk,behavior-input-two-axis";')
+    A("            #binding-cells = <1>;")
+    A("            x-input-code = <INPUT_REL_HWHEEL>;")
+    A("            y-input-code = <INPUT_REL_WHEEL>;")
+    if period:
+        A(f"            trigger-period-ms = <{period}>;")
+    if delay:
+        A(f"            delay-ms = <{delay}>;")
+    A(f"            time-to-max-speed-ms = <{ttm}>;")
+    A(f"            acceleration-exponent = <{exp}>;")
+    A("        };")
+for name, sign, note in (("scrl_up", "", "上"), ("scrl_dn", "-", "下")):
+    t, h, r = (f"MOVE_Y({sign}{v})" for v in (tap_speed, hold_speed, ramp_speed))
+    A(f"        // {note}スクロール：単押しで {SCROLL_TAP_NOTCH} ノッチ。押し続けると {SCROLL_HOLD_DELAY_MS}ms 後から流れ、")
+    A(f"        // さらに {SCROLL_RAMP_MS}ms かけて 40msあたり {SCROLL_HOLD_START} → {SCROLL_HOLD_MAX} ノッチまで速くなる")
+    A(f"        {name}: {name} {{")
+    A('            compatible = "zmk,behavior-macro";')
+    A("            #binding-cells = <0>;")
+    A("            wait-ms = <0>;")
+    A("            tap-ms = <0>;")
+    A("            bindings")
+    # ZMK のマクロの待ち時間は「各操作の後」に入り、&macro_wait_time はそれ以降の待ち時間を切り替えるだけ
+    A(f"                = <&macro_wait_time {tap_wait}>")
+    A(f"                , <&macro_press &scrl_tap {t}>")
+    A("                , <&macro_wait_time 0>")
+    A(f"                , <&macro_release &scrl_tap {t}>")
+    A(f"                , <&macro_press &scrl_hold {h} &scrl_ramp {r}>")
+    A("                , <&macro_pause_for_release>")
+    A(f"                , <&macro_release &scrl_hold {h} &scrl_ramp {r}>")
+    A("                ;")
+    A("        };")
 A("    };")
+A("")
+# 部品ごとに受け口（input-listener）が要る。無いとホストに届かない
+for name in ("scrl_tap", "scrl_hold", "scrl_ramp"):
+    A(f"    {name}_input_listener {{")
+    A('        compatible = "zmk,input-listener";')
+    A(f"        device = <&{name}>;")
+    A("    };")
 A("")
 A("    combos {")
 A('        compatible = "zmk,combos";')
