@@ -1,0 +1,30 @@
+# キーで加速スクロール（AHK の lib/ScrollKeys.ahk をキーボード側へ移したもの。2026-11-05）
+# 単押し＝tap-notches を押した瞬間に1回。押し続けると hold-delay-ms 後から interval-ms ごとに送り、
+# 1回の量が ramp-ms かけて start-notches → max-notches へ直線的に増える。離したらその場で止まる。
+# 引数：1 = 上、2 = 下。どちらかが動いている間に押した別のスクロールは無視する（AHK と同じ）。
+# 量の単位はホイールの1ノッチ（Windows の「1回に何行スクロールするか」の設定どおり）。
+description: Accelerated key scrolling (tap = fixed notches, hold = ramps up)
+
+compatible: "zmk,behavior-accel-scroll"
+
+include: one_param.yaml
+
+properties:
+  tap-notches:
+    type: int
+    default: 3
+  hold-delay-ms:
+    type: int
+    default: 220
+  interval-ms:
+    type: int
+    default: 40
+  start-notches:
+    type: int
+    default: 3
+  max-notches:
+    type: int
+    default: 6
+  ramp-ms:
+    type: int
+    default: 360

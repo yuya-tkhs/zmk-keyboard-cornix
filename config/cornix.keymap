@@ -12,7 +12,6 @@
 #include <dt-bindings/zmk/outputs.h>
 #include <dt-bindings/zmk/pointing.h>
 #include <input/processors.dtsi>
-#include <zephyr/dt-bindings/input/input-event-codes.h>
 #include <behaviors/rgbled_widget.dtsi>
 
 #define BASE 0
@@ -21,6 +20,10 @@
 #define MOUSE 3
 #define RPAD 4
 #define MSLOW 5
+
+// 加速スクロール（&ascrl）の向き。src/behaviors/behavior_accel_scroll.c と揃える
+#define SCRL_ACCEL_UP 1
+#define SCRL_ACCEL_DN 2
 
 // マウスキー移動の速度切り替え：MSLOW 層が有効な間だけ移動量を縮める
 // （マウス層の左親指 42 を押している間 = &mo MSLOW）
@@ -66,83 +69,24 @@
             flavor = "hold-preferred";
             tapping-term-ms = <150>;
         };
-        // 加速スクロールの部品：単押しの 3 ノッチ
-        scrl_tap: scrl_tap {
-            compatible = "zmk,behavior-input-two-axis";
+        // 加速スクロール：単押しで 3 ノッチ。押し続けると 220ms 後から 40ms ごとに送り、
+        // 1回の量が 360ms かけて 3 → 6 ノッチまで増える。離したら即停止
+        ascrl: accel_scroll {
+            compatible = "zmk,behavior-accel-scroll";
             #binding-cells = <1>;
-            x-input-code = <INPUT_REL_HWHEEL>;
-            y-input-code = <INPUT_REL_WHEEL>;
-            trigger-period-ms = <20>;
-            time-to-max-speed-ms = <0>;
-            acceleration-exponent = <0>;
-        };
-        // 加速スクロールの部品：長押し：一定の速さ（40msあたり 3 ノッチ）
-        scrl_hold: scrl_hold {
-            compatible = "zmk,behavior-input-two-axis";
-            #binding-cells = <1>;
-            x-input-code = <INPUT_REL_HWHEEL>;
-            y-input-code = <INPUT_REL_WHEEL>;
-            delay-ms = <190>;
-            time-to-max-speed-ms = <0>;
-            acceleration-exponent = <0>;
-        };
-        // 加速スクロールの部品：長押し：360ms かけて 0 → 40msあたり 3 ノッチ
-        scrl_ramp: scrl_ramp {
-            compatible = "zmk,behavior-input-two-axis";
-            #binding-cells = <1>;
-            x-input-code = <INPUT_REL_HWHEEL>;
-            y-input-code = <INPUT_REL_WHEEL>;
-            delay-ms = <190>;
-            time-to-max-speed-ms = <360>;
-            acceleration-exponent = <1>;
-        };
-        // 上スクロール：単押しで 3 ノッチ。押し続けると 220ms 後から流れ、
-        // さらに 360ms かけて 40msあたり 3 → 6 ノッチまで速くなる
-        scrl_up: scrl_up {
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <0>;
-            bindings
-                = <&macro_wait_time 30>
-                , <&macro_press &scrl_tap MOVE_Y(150)>
-                , <&macro_wait_time 0>
-                , <&macro_release &scrl_tap MOVE_Y(150)>
-                , <&macro_press &scrl_hold MOVE_Y(75) &scrl_ramp MOVE_Y(75)>
-                , <&macro_pause_for_release>
-                , <&macro_release &scrl_hold MOVE_Y(75) &scrl_ramp MOVE_Y(75)>
-                ;
-        };
-        // 下スクロール：単押しで 3 ノッチ。押し続けると 220ms 後から流れ、
-        // さらに 360ms かけて 40msあたり 3 → 6 ノッチまで速くなる
-        scrl_dn: scrl_dn {
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <0>;
-            bindings
-                = <&macro_wait_time 30>
-                , <&macro_press &scrl_tap MOVE_Y(-150)>
-                , <&macro_wait_time 0>
-                , <&macro_release &scrl_tap MOVE_Y(-150)>
-                , <&macro_press &scrl_hold MOVE_Y(-75) &scrl_ramp MOVE_Y(-75)>
-                , <&macro_pause_for_release>
-                , <&macro_release &scrl_hold MOVE_Y(-75) &scrl_ramp MOVE_Y(-75)>
-                ;
+            tap-notches = <3>;
+            hold-delay-ms = <220>;
+            interval-ms = <40>;
+            start-notches = <3>;
+            max-notches = <6>;
+            ramp-ms = <360>;
         };
     };
 
-    scrl_tap_input_listener {
+    // 加速スクロールの受け口。無いとホストに届かない
+    ascrl_input_listener {
         compatible = "zmk,input-listener";
-        device = <&scrl_tap>;
-    };
-    scrl_hold_input_listener {
-        compatible = "zmk,input-listener";
-        device = <&scrl_hold>;
-    };
-    scrl_ramp_input_listener {
-        compatible = "zmk,input-listener";
-        device = <&scrl_ramp>;
+        device = <&ascrl>;
     };
 
     combos {
@@ -152,7 +96,7 @@
             timeout-ms = <40>;
             require-prior-idle-ms = <250>;
             key-positions = <2 3>;
-            bindings = <&scrl_up>;
+            bindings = <&ascrl SCRL_ACCEL_UP>;
             layers = <BASE>;
         };
         // A+S → Esc。as はローマ字に多い（masu 等）ので必ずガード
@@ -168,7 +112,7 @@
             timeout-ms = <40>;
             require-prior-idle-ms = <250>;
             key-positions = <14 15>;
-            bindings = <&scrl_dn>;
+            bindings = <&ascrl SCRL_ACCEL_DN>;
             layers = <BASE>;
         };
         // D+F → 無変換。ローマ字の直後に押す。df はローマ字に出ない（誤爆ガードなし）
@@ -325,14 +269,14 @@
         combo_23 {
             timeout-ms = <40>;
             key-positions = <2 3>;
-            bindings = <&scrl_up>;
+            bindings = <&ascrl SCRL_ACCEL_UP>;
             layers = <MOUSE MSLOW>;
         };
         // Down+Up → 下スクロール（加速つき）（誤爆ガードなし）
         combo_24 {
             timeout-ms = <40>;
             key-positions = <14 15>;
-            bindings = <&scrl_dn>;
+            bindings = <&ascrl SCRL_ACCEL_DN>;
             layers = <MOUSE MSLOW>;
         };
         // ←+↓ → Del（誤爆ガードなし）

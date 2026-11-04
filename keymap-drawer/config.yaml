@@ -83,8 +83,8 @@ parse_config:
     "&mmv MOVE_RIGHT": Right
     "&mmv MOVE_UP": Up
     "&mmv MOVE_DOWN": Down
-    "&scrl_up": {t: "W Up", s: "加速"}
-    "&scrl_dn": {t: "W Dn", s: "加速"}
+    "&ascrl SCRL_ACCEL_UP": {t: "W Up", s: "加速"}
+    "&ascrl SCRL_ACCEL_DN": {t: "W Dn", s: "加速"}
 draw_config:
   combo_w: 24
   combo_h: 20
