@@ -5,6 +5,12 @@ on:
     paths:
       - "boards/*"
       - "config/*"
+      # 自作 behavior（加速スクロール）だけ直したときもビルドする
+      - "src/**"
+      - "dts/**"
+      - "CMakeLists.txt"
+      - "Kconfig"
+      - "zephyr/**"
     tags-ignore:
       - "*"
 
