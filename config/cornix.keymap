@@ -7,7 +7,7 @@
  */
 
 // マウスキーの通常の速度（pointing.h の MOVE_UP などが使う値）。include より前に書く
-#define ZMK_POINTING_DEFAULT_MOVE_VAL 1500
+#define ZMK_POINTING_DEFAULT_MOVE_VAL 3000
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/bt.h>
@@ -28,7 +28,7 @@
 #define SCRL_ACCEL_UP 1
 #define SCRL_ACCEL_DN 2
 
-// マウスキー（通常）：150ms かけて 1500 px/秒まで上がる
+// マウスキー（通常）：150ms かけて 3000 px/秒まで上がる
 &mmv {
     time-to-max-speed-ms = <150>;
     acceleration-exponent = <1>;
