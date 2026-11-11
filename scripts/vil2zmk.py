@@ -7,7 +7,8 @@ NLAYERS = 5  # 使っているのは 0〜4。5〜9 は空
 
 LAYER_NAMES = ["Base", "Numpad", "Symbol", "Mouse", "RPad"]
 LAYER_DEFS = ["BASE", "NUMPAD", "SYM", "MOUSE", "RPAD"]
-# .vil に無い、ZMK 側だけで足す層（中身は全部 &trans）。マウス層の上に重ねて速度だけ変える
+# .vil に無い、ZMK 側だけで足す層。マウス層の上に重ねる
+#   MouseSlow：マウス移動キーだけ精密用の &mmv_fine に差し替え、ほかは &trans（MOUSE_FINE_*）
 EXTRA_LAYER_NAMES = ["MouseSlow"]
 EXTRA_LAYER_DEFS = ["MSLOW"]
 ALL_LAYER_NAMES = LAYER_NAMES + EXTRA_LAYER_NAMES
@@ -77,8 +78,16 @@ POS_OVERRIDE = {
     ("Mouse", 43): "&trans",              # 高速は使わない（2026-10-01）
 }
 
-# ---- マウスキー移動の速度倍率（掛ける数, 割る数）。&zip_xy_scaler に渡す。16 以下で
-MOUSE_SLOW_SCALE = (1, 3)   # 1/3 倍
+# ---- マウスキーの移動速度（2026-11-11）。ZMK の移動は「押した瞬間 0 → RAMP_MS かけて直線的に MAX へ」
+# 速度の単位は px/秒（Windows のポインター速度の設定が掛かる）。ZMK の既定は 600 px/秒・300ms
+#   通常（&mmv）：出だしも長押しも速く。短い時間で上限まで上げる
+#   精密（&mmv_fine、マウス層で 42 を押している間）：上限を低く、ゆっくり上げる。
+#     単押しで数 px だけ動き、押し続けても遅いまま。2026-10-01〜11-10 は &zip_xy_scaler 1/3 だったが、
+#     倍率だけでは通常の加速の付き方がそのまま残り、通常を速くすると精密も出だしが速くなるため分けた
+MOUSE_MAX = 1500            # 通常の上限（px/秒）
+MOUSE_RAMP_MS = 150         # 通常：上限に届くまで
+MOUSE_FINE_MAX = 300        # 精密の上限（px/秒）
+MOUSE_FINE_RAMP_MS = 500    # 精密：上限に届くまで
 # 速度層（MSLOW）が一番上のときもマウス層のコンボが効くように、コンボの layers に足す
 EXTRA_LAYERS_FOR = {"MOUSE": ["MSLOW"]}
 
@@ -223,8 +232,11 @@ A(" * Cornix — Vial 配列からの移植")
 A(f" * 元ファイル：vil/{os.path.basename(VIL)}")
 A(" * 生成：scripts/vil2zmk.py（キー番号の対応は config/includes/cornix54.h の図を参照）")
 A(" * キー配置は .vil が元。変えた位置は vil2zmk.py の POS_OVERRIDE、コンボは COMBOS 表（.vil のコンボは使わない）")
-A(" * ZMK 側だけで足したもの：速度層 MSLOW（EXTRA_LAYER_*）、コンボの誤爆ガード（COMBO_PRIOR_IDLE_MS）、加速スクロール（SCROLL_*）")
+A(" * ZMK 側だけで足したもの：精密移動の層 MSLOW（EXTRA_LAYER_* / MOUSE_FINE_*）、コンボの誤爆ガード（COMBO_PRIOR_IDLE_MS）、加速スクロール（SCROLL_*）")
 A(" */")
+A("")
+A("// マウスキーの通常の速度（pointing.h の MOVE_UP などが使う値）。include より前に書く")
+A(f"#define ZMK_POINTING_DEFAULT_MOVE_VAL {MOUSE_MAX}")
 A("")
 A("#include <behaviors.dtsi>")
 A("#include <dt-bindings/zmk/bt.h>")
@@ -241,15 +253,16 @@ A("// 加速スクロール（&ascrl）の向き。src/behaviors/behavior_accel_
 A("#define SCRL_ACCEL_UP 1")
 A("#define SCRL_ACCEL_DN 2")
 A("")
-A("// マウスキー移動の速度切り替え：MSLOW 層が有効な間だけ移動量を縮める")
-A("// （マウス層の左親指 42 を押している間 = &mo MSLOW）")
-A("&mmv_input_listener {")
-for node, layer, (mul, div), note in (("slow", "MSLOW", MOUSE_SLOW_SCALE, "低速（精密）"),):
-    A(f"    {node} {{  // {note}：{mul}/{div} 倍")
-    A(f"        layers = <{layer}>;")
-    A(f"        input-processors = <&zip_xy_scaler {mul} {div}>;")
-    A("    };")
+A(f"// マウスキー（通常）：{MOUSE_RAMP_MS}ms かけて {MOUSE_MAX} px/秒まで上がる")
+A("&mmv {")
+A(f"    time-to-max-speed-ms = <{MOUSE_RAMP_MS}>;")
+A("    acceleration-exponent = <1>;")
 A("};")
+A("")
+A(f"// マウスキー（精密）の向き。{MOUSE_FINE_MAX} px/秒が上限")
+for name, expr in (("LEFT", f"MOVE_X(-{MOUSE_FINE_MAX})"), ("RIGHT", f"MOVE_X({MOUSE_FINE_MAX})"),
+                   ("UP", f"MOVE_Y(-{MOUSE_FINE_MAX})"), ("DOWN", f"MOVE_Y({MOUSE_FINE_MAX})")):
+    A(f"#define FINE_{name} {expr}")
 A("")
 A("/ {")
 A("    behaviors {")
@@ -300,6 +313,22 @@ A(f"            start-notches = <{SCROLL_HOLD_START}>;")
 A(f"            max-notches = <{SCROLL_HOLD_MAX}>;")
 A(f"            ramp-ms = <{SCROLL_RAMP_MS}>;")
 A("        };")
+A(f"        // マウスキー（精密）：マウス層で 42 を押している間（MSLOW 層）の移動キー。")
+A(f"        // {MOUSE_FINE_RAMP_MS}ms かけて {MOUSE_FINE_MAX} px/秒まで上がる。単押しなら数 px")
+A("        mmv_fine: mouse_move_fine {")
+A('            compatible = "zmk,behavior-input-two-axis";')
+A("            #binding-cells = <1>;")
+A("            x-input-code = <INPUT_REL_X>;")
+A("            y-input-code = <INPUT_REL_Y>;")
+A(f"            time-to-max-speed-ms = <{MOUSE_FINE_RAMP_MS}>;")
+A("            acceleration-exponent = <1>;")
+A("        };")
+A("    };")
+A("")
+A("    // マウスキー（精密）の受け口。無いとホストに届かない")
+A("    mmv_fine_input_listener {")
+A('        compatible = "zmk,input-listener";')
+A("        device = <&mmv_fine>;")
 A("    };")
 A("")
 A("    // 加速スクロールの受け口。無いとホストに届かない")
@@ -361,7 +390,13 @@ for li in range(NLAYERS):
         A(f"            sensor-bindings = <{' '.join(eb)}>;")
     A("        };")
 # .vil に無い層：POS_OVERRIDE で指定した位置以外は &trans
-#   MouseSlow：全部 &trans（マウス層をそのまま透かし、入力プロセッサの切り替えにだけ使う）
+#   MouseSlow：マウス層の移動キー（&mmv MOVE_*）の位置だけ &mmv_fine FINE_* にする
+mouse_li = LAYER_NAMES.index("Mouse")
+for p in range(50):
+    b = POS_OVERRIDE.get(("Mouse", p)) or conv(layers[mouse_li][p], f"MSLOWp{p}")
+    if b.startswith("&mmv MOVE_"):
+        POS_OVERRIDE.setdefault(("MouseSlow", p), b.replace("&mmv MOVE_", "&mmv_fine FINE_"))
+assert sum(1 for (n, _) in POS_OVERRIDE if n == "MouseSlow") == 4, "マウス層の移動キーが4つ見つからない"
 for n in EXTRA_LAYER_NAMES:
     A("")
     A(f"        {n.lower()}_layer {{")

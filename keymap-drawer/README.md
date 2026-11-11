@@ -2,7 +2,7 @@
 
 `config/cornix.keymap` から配列図 `cornix.svg` を作る。記号キーは JIS の刻印で表示する（`config.yaml`）。
 ノブの回転は図に出ない（keymap-drawer が sensor-bindings を描かないため）。
-マウス速度用の MouseSlow / MouseFast 層は中身が全部 ▽ なので `-s` で描画から外している（マウス層の「低速」「高速」キーで表示）。
+精密移動用の MouseSlow 層は、移動キーを精密用に差し替えただけでほかは全部 ▽ なので `-s` で描画から外している（マウス層の「低速」キーで表示）。
 
 ```sh
 pip install keymap-drawer
