@@ -269,10 +269,10 @@ layers:
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
+  - '&mmv_fine MOVE_X(-450)'
+  - '&mmv_fine MOVE_Y(450)'
+  - '&mmv_fine MOVE_Y(-450)'
+  - '&mmv_fine MOVE_X(450)'
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
@@ -381,6 +381,12 @@ combos:
   l: [Mouse, MouseSlow]
 - p: [14, 15]
   k: {t: W Dn, s: 加速}
+  l: [Mouse, MouseSlow]
+- p: [13, 14]
+  k: Esc
+  l: [Mouse, MouseSlow]
+- p: [15, 16]
+  k: 無変換
   l: [Mouse, MouseSlow]
 - p: [25, 26]
   k: Del
