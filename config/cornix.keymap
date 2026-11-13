@@ -308,43 +308,36 @@
             bindings = <&kp ESC>;
             layers = <MOUSE MSLOW>;
         };
-        // Up+Right → 無変換（Base の D+F と同じ位置。2026-11-13。右上の斜め移動は使えない）（誤爆ガードなし）
-        combo_26 {
-            timeout-ms = <40>;
-            key-positions = <15 16>;
-            bindings = <&kp INT_MUHENKAN>;
-            layers = <MOUSE MSLOW>;
-        };
         // ←+↓ → Del（誤爆ガードなし）
-        combo_27 {
+        combo_26 {
             timeout-ms = <40>;
             key-positions = <25 26>;
             bindings = <&kp DEL>;
             layers = <MOUSE MSLOW>;
         };
         // ↓+↑ → BS（誤爆ガードなし）
-        combo_28 {
+        combo_27 {
             timeout-ms = <40>;
             key-positions = <26 27>;
             bindings = <&kp BSPC>;
             layers = <MOUSE MSLOW>;
         };
         // ↑+→ → Enter（誤爆ガードなし）
-        combo_29 {
+        combo_28 {
             timeout-ms = <40>;
             key-positions = <27 28>;
             bindings = <&kp RET>;
             layers = <MOUSE MSLOW>;
         };
         // ↓+↑+→ → Ctrl+Enter（誤爆ガードなし）
-        combo_30 {
+        combo_29 {
             timeout-ms = <60>;
             key-positions = <26 27 28>;
             bindings = <&kp LC(RET)>;
             layers = <MOUSE MSLOW>;
         };
         // P+O → [（JIS）
-        combo_31 {
+        combo_30 {
             timeout-ms = <40>;
             require-prior-idle-ms = <250>;
             key-positions = <1 2>;
@@ -352,7 +345,7 @@
             layers = <RPAD>;
         };
         // -+L → ]（JIS）
-        combo_32 {
+        combo_31 {
             timeout-ms = <40>;
             require-prior-idle-ms = <250>;
             key-positions = <13 14>;
@@ -360,14 +353,14 @@
             layers = <RPAD>;
         };
         // K+J → 変換（誤爆ガードなし）
-        combo_33 {
+        combo_32 {
             timeout-ms = <40>;
             key-positions = <15 16>;
             bindings = <&kp INT_HENKAN>;
             layers = <RPAD>;
         };
         // .+, → @（JIS）
-        combo_34 {
+        combo_33 {
             timeout-ms = <40>;
             require-prior-idle-ms = <250>;
             key-positions = <26 27>;

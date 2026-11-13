@@ -158,7 +158,6 @@ COMBOS = [
     ((2, 3),           "&ascrl SCRL_ACCEL_UP",["MOUSE"],          False, "Click2+Click3 → 上スクロール（加速つき）"),
     ((14, 15),         "&ascrl SCRL_ACCEL_DN",["MOUSE"],          False, "Down+Up → 下スクロール（加速つき）"),
     ((13, 14),         "&kp ESC",          ["MOUSE"],          False, "Left+Down → Esc（Base の A+S と同じ位置。2026-11-13。左下の斜め移動は使えない）"),
-    ((15, 16),         "&kp INT_MUHENKAN", ["MOUSE"],          False, "Up+Right → 無変換（Base の D+F と同じ位置。2026-11-13。右上の斜め移動は使えない）"),
     ((25, 26),         "&kp DEL",          ["MOUSE"],          False, "←+↓ → Del"),
     ((26, 27),         "&kp BSPC",         ["MOUSE"],          False, "↓+↑ → BS"),
     ((27, 28),         "&kp RET",          ["MOUSE"],          False, "↑+→ → Enter"),

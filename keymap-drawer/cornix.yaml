@@ -385,9 +385,6 @@ combos:
 - p: [13, 14]
   k: Esc
   l: [Mouse, MouseSlow]
-- p: [15, 16]
-  k: 無変換
-  l: [Mouse, MouseSlow]
 - p: [25, 26]
   k: Del
   l: [Mouse, MouseSlow]
