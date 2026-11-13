@@ -7,7 +7,7 @@
  */
 
 // マウスキーの通常の速度（pointing.h の MOVE_UP などが使う値）。include より前に書く
-#define ZMK_POINTING_DEFAULT_MOVE_VAL 2400
+#define ZMK_POINTING_DEFAULT_MOVE_VAL 2000
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/bt.h>
@@ -28,17 +28,17 @@
 #define SCRL_ACCEL_UP 1
 #define SCRL_ACCEL_DN 2
 
-// マウスキー（通常）：150ms かけて 2400 px/秒まで上がる
+// マウスキー（通常）：150ms かけて 2000 px/秒まで上がる
 &mmv {
     time-to-max-speed-ms = <150>;
     acceleration-exponent = <1>;
 };
 
-// マウスキー（精密）の向き。300 px/秒が上限
-#define FINE_LEFT MOVE_X(-300)
-#define FINE_RIGHT MOVE_X(300)
-#define FINE_UP MOVE_Y(-300)
-#define FINE_DOWN MOVE_Y(300)
+// マウスキー（精密）の向き。450 px/秒が上限
+#define FINE_LEFT MOVE_X(-450)
+#define FINE_RIGHT MOVE_X(450)
+#define FINE_UP MOVE_Y(-450)
+#define FINE_DOWN MOVE_Y(450)
 
 / {
     behaviors {
@@ -88,7 +88,7 @@
             ramp-ms = <360>;
         };
         // マウスキー（精密）：マウス層で 42 を押している間（MSLOW 層）の移動キー。
-        // 500ms かけて 300 px/秒まで上がる。単押しなら数 px
+        // 500ms かけて 450 px/秒まで上がる。単押しなら数 px
         mmv_fine: mouse_move_fine {
             compatible = "zmk,behavior-input-two-axis";
             #binding-cells = <1>;
